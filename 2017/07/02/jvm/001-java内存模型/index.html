@@ -11,22 +11,24 @@
     
     
     
-    <meta name="description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
-<meta name="keywords" content="java">
+    <meta name="description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  JAVA内存模型   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程">
+<meta name="keywords" content="java,jvm">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="java内存模型">
 <meta property="og:url" content="https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/index.html">
 <meta property="og:site_name" content="为为技术文档">
-<meta property="og:description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
+<meta property="og:description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  JAVA内存模型   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-07-21T14:26:18.982Z">
+<meta property="og:updated_time" content="2017-07-21T20:04:49.415Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java内存模型">
-<meta name="twitter:description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
+<meta name="twitter:description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  JAVA内存模型   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程">
     
     
         
     
+    
+        <meta property="og:image" content="https://weiwei02.github.io/assets/images/weiwei.jpg"/>
     
     
     
@@ -43,8 +45,6 @@
             <!-- Define author's picture -->
 
 
-    
-
 <header id="header" data-behavior="4">
     <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
     <div class="header-title">
@@ -52,9 +52,11 @@
     </div>
     
         
-            <a  class="header-right-picture "
+            <a  class="header-right-icon 技术，改变世界"
                 href="#about">
         
+        
+            <i class="fa fa-lg fa-wewei.jpg"></i>
         
         </a>
     
@@ -63,8 +65,23 @@
             <!-- Define author's picture -->
 
 
+
+        
+    
+
 <nav id="sidebar" data-behavior="4">
     <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">weiwei02</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>技术，改变世界</p>
+</h5>
+                
+            </div>
         
         
             <ul class="sidebar-buttons">
@@ -145,6 +162,24 @@
         
             <ul class="sidebar-buttons">
             
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/weiwei02" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="mailto:weiwei02@vip.qq.com" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-envelope-o"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
         </ul>
         
     </div>
@@ -156,7 +191,46 @@
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+
+
+<div class="post">
+  <style type="text/css">
+.toc-article {
+  display: block;
+  word-break: break-all;
+  background: none repeat scroll 0 0 # eee;
+  /*margin: 2em 0 0 0.5em;*/
+  float: left;
+  width: 20%;
+  /*top: 76px;
+  bottom: 140px;
+  margin-bottom: 0*/
+  overflow-y: auto;
+  position: fixed;
+  overflow-x: hidden;
+  min-height: 1px;
+}
+.toc-article strong {
+margin-top: 40px;
+font-weight: 700;
+padding-left: 2em;
+color: #0e83cd;
+border-top: 1px solid #e3e3e3;
+text-align: center;
+}
+.toc-article a {
+  cursor: pointer;
+  color: #444;
+  text-decoration: none;
+}
+</style>
+
+<aside id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#java内存模型"><span class="post-toc-text">JAVA内存模型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#主内存和工作内存"><span class="post-toc-text">主内存和工作内存</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#jmm内存操作"><span class="post-toc-text">JMM内存操作</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#volatile-关键字"><span class="post-toc-text">volatile 关键字</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关于"><span class="post-toc-text">关于</span></a></li></ol>
+</aside>
+
+<article class="" itemscope itemType="http://schema.org/BlogPosting">
     
     
         <div class="post-header main-content-wrap text-left">
@@ -175,7 +249,7 @@
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/java/">java</a>
+    <a class="category-link" href="/categories/java/">java</a>, <a class="category-link" href="/categories/java/jvm/">jvm</a>
 
 
     
@@ -186,19 +260,17 @@
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <h1 id="Technical–Documentation"><a href="#Technical–Documentation" class="headerlink" title="Technical–Documentation"></a>Technical–Documentation</h1><p>共享技术文档</p>
-<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>  为为日常工作和学习的总结。</p>
-<h3 id="技术文档主站简介"><a href="#技术文档主站简介" class="headerlink" title="技术文档主站简介"></a>技术文档主站简介</h3><p>   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。</p>
-<h5 id="点击这里直接进入为为技术文档主站，或者访问-https-weiwei02-github-io-Technical–Documentation"><a href="#点击这里直接进入为为技术文档主站，或者访问-https-weiwei02-github-io-Technical–Documentation" class="headerlink" title="点击这里直接进入为为技术文档主站，或者访问 https://weiwei02.github.io/Technical–Documentation/"></a>点击这里直接进入<a href="https://weiwei02.github.io/Technical--Documentation/">为为技术文档主站</a>，或者访问 <a href="https://weiwei02.github.io/Technical--Documentation/">https://weiwei02.github.io/Technical–Documentation/</a></h5><h5 id="与文档配套的-Technical–Documentation项目的地址是-https-github-com-weiwei02-Technical-Documentation"><a href="#与文档配套的-Technical–Documentation项目的地址是-https-github-com-weiwei02-Technical-Documentation" class="headerlink" title="与文档配套的 Technical–Documentation项目的地址是 https://github.com/weiwei02/Technical--Documentation"></a>与文档配套的 <a href="https://github.com/weiwei02/Technical--Documentation" target="_blank" rel="external">Technical–Documentation</a>项目的地址是 <a href="https://github.com/weiwei02/Technical--Documentation" target="_blank" rel="external">https://github.com/weiwei02/Technical--Documentation</a></h5><h3 id="非原创声明"><a href="#非原创声明" class="headerlink" title="非原创声明"></a>非原创声明</h3><blockquote>
+            <p>非原创声明</p>
+<blockquote>
 <p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
 </blockquote>
-<h2 id="JAVA内存模型"><a href="#JAVA内存模型" class="headerlink" title="JAVA内存模型"></a>JAVA内存模型</h2><p>   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程是比进程更小的单位，一个进程可以由多个线程组成。同时线程也是在得到cpu时间片时可运行的最小的单位。尤记得在这些理论基础下，我慢慢的学会了使用C在LINUX环境下使用多进程和多线程进行编程。这些并发API都是LINUX提供的标准API，程序在编译链接之后可以直接调用通过系统内核创建进程或线程，在类UNIX操作系统下这样去做可以让程序有更高的性能。但是这种编程方式所编写出来的代码是与操作系统绑定的，我在linux下明明可以完美运行的代码，在windows下连编译甚至都做不到。除非是用 windows API重新把与操作系统进行交互的那些代码给替换掉，否则就不要想着让程序去跨平台运行了。<br>   在进行并发编程时相对于C，我更喜欢java的编程体验。java消除操作系统之间的差异，原生的对多线程应用提供了很好的支持，特别是在jdk1.5之后，jdk还提供了currency包，更好的让程序员们无需去关注并发的难点与细节，更专心的关注应用的业务需求实现。<br>   在多线程编程中最长遇到的问题就是线程安全问题，其中又以内存中的数据安全问题最为常见(这个数据安全指的是发生脏读、幻读等并发编程中会遇到的错误)。为了消除不同硬件和操作系统对内存操作的差异，在硬件设备和操作系统的内存模型之上，java虚拟机规范定义了一种java内存模型(JAVA Memory Model,简称JMM)，将内存分为了工作内存和主内存。JMM主要定义了JVM中在内存中操作变量的规则和细节，用来解决在并发竞争对变量操作时可能会发生的各种问题。JMM完全兼容CPU的多级cache机制，并且支持编译器的代码重排序。<br>   注意：JMM内存模型的概念不同于jvm中6大内存区域的概念，两者不可强行混为一谈。</p>
+<h2 id="java内存模型"><a href="#JAVA内存模型" class="headerlink" title="JAVA内存模型"></a>JAVA内存模型</h2><p>   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程是比进程更小的单位，一个进程可以由多个线程组成。同时线程也是在得到cpu时间片时可运行的最小的单位。尤记得在这些理论基础下，我慢慢的学会了使用C在LINUX环境下使用多进程和多线程进行编程。这些并发API都是LINUX提供的标准API，程序在编译链接之后可以直接调用通过系统内核创建进程或线程，在类UNIX操作系统下这样去做可以让程序有更高的性能。但是这种编程方式所编写出来的代码是与操作系统绑定的，我在linux下明明可以完美运行的代码，在windows下连编译甚至都做不到。除非是用 windows API重新把与操作系统进行交互的那些代码给替换掉，否则就不要想着让程序去跨平台运行了。<br>   在进行并发编程时相对于C，我更喜欢java的编程体验。java消除操作系统之间的差异，原生的对多线程应用提供了很好的支持，特别是在jdk1.5之后，jdk还提供了currency包，更好的让程序员们无需去关注并发的难点与细节，更专心的关注应用的业务需求实现。<br>   在多线程编程中最长遇到的问题就是线程安全问题，其中又以内存中的数据安全问题最为常见(这个数据安全指的是发生脏读、幻读等并发编程中会遇到的错误)。为了消除不同硬件和操作系统对内存操作的差异，在硬件设备和操作系统的内存模型之上，java虚拟机规范定义了一种java内存模型(JAVA Memory Model,简称JMM)，将内存分为了工作内存和主内存。JMM主要定义了JVM中在内存中操作变量的规则和细节，用来解决在并发竞争对变量操作时可能会发生的各种问题。JMM完全兼容CPU的多级cache机制，并且支持编译器的代码重排序。<br>   注意：JMM内存模型的概念不同于jvm中6大内存区域的概念，两者不可强行混为一谈。</p>
 <h3 id="主内存和工作内存"><a href="#主内存和工作内存" class="headerlink" title="主内存和工作内存"></a>主内存和工作内存</h3><p>  JMM规定了所有的全局变量都存于主内存(Main Memory)中，一般情况下这些全局变量都会被保存到堆里。每个线程都有自己的工作内存(Working Memory)，工作内存中会保存当前线程所需用到的主内存中全局变量的拷贝和自己的局部变量。一般情况下工作内存指的是栈内存，从物理上来讲，工作内存一般情况下都会工作于cpu的cache里。一个线程对全局变量的任何操作必须在自己的工作内存中进行，不允许直接操作工作内存。不同线程不能访问对方的工作内容，只能通过主内存进行数据交换。</p>
 <p>  <img src="" alt="JMM关系图"></p>
 <blockquote>
 <p>工作内存在对主内存中变量做拷贝时，如果变量是基本类型的，则会拷贝其值；如果是引用类型的，那么仅仅会拷贝其引用</p>
 </blockquote>
-<h3 id="JMM内存操作"><a href="#JMM内存操作" class="headerlink" title="JMM内存操作"></a>JMM内存操作</h3><p>JMM定义了8种主内存与工作内存之间的具体交互操作，虚拟机在实现JMM时必须保证每种内存操作都是原子的。表1详细列出了JMM的8种内存操作。</p>
+<h3 id="jmm内存操作"><a href="#JMM内存操作" class="headerlink" title="JMM内存操作"></a>JMM内存操作</h3><p>JMM定义了8种主内存与工作内存之间的具体交互操作，虚拟机在实现JMM时必须保证每种内存操作都是原子的。表1详细列出了JMM的8种内存操作。</p>
 <table>
 <thead>
 <tr>
@@ -319,11 +391,7 @@ private static void increase() {
 <li>《The Java Virtual Machine Specification》</li>
 <li>《深入理解Java虚拟机：JVM高级特性与最佳实践/周志明著.——2版.——北京：机械工业出版社，2013.6》</li>
 </ol>
-<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p><link rel="stylesheet" href="[path to fork.css]"></p>
-<div class="fork-me-wrapper"><br><br>  <div class="fork-me"><br><br>    <a class="fork-me-link" href="https://github.com/edull24/fork-me-on-github" target="_blank" rel="external"><br><br>      <span class="fork-me-text">Fork Me On GitHub</span><br><br>    </a><br><br>  </div>
-
-<p></p></div><p></p>
-
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2>
             
         </div>
     </div>
@@ -332,7 +400,7 @@ private static void increase() {
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">标签</span><br/>
                 
-    <a class="tag tag--primary tag--small t-link" href="/tags/java/">java</a>
+    <a class="tag tag--primary tag--small t-link" href="/tags/java/">java</a> <a class="tag tag--primary tag--small t-link" href="/tags/jvm/">jvm</a>
 
             </div>
         
@@ -350,7 +418,7 @@ private static void increase() {
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/" data-tooltip="java内存模型">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/" data-tooltip="MapReduce并行计算框架介绍">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -378,14 +446,6 @@ private static void increase() {
             <li class="post-action hide-xs">
                 <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
                     <i class="fa fa-star"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
-                    <i class="fa fa-renren"></i>
                 </a>
             </li>
         
@@ -407,14 +467,56 @@ private static void increase() {
         
     </div>
 </article>
-
+</div>
 
 
                 <footer id="footer" class="main-content-wrap">
     <span class="copyrights">
         Copyrights &copy; 2017 weiwei02. All Rights Reserved.
+        github空间地址： https://weiwei02.github.io/
+        国内空间地址：   https://weiwei02.cording.me/
     </span>
 </footer>
+<div class="ribbon">
+<a href="https://github.com/weiwei02">Fork me on GitHub</a>
+</div>
+<style type="text/css">
+/**
+fork me on github logo
+*/
+.ribbon {
+  background-color: #a00;
+  overflow: hidden;
+  white-space: nowrap;
+  /* top left corner */
+  position: fixed;
+  right: -50px;
+  top: 40px;
+  /* 45 deg ccw rotation */
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  /* shadow */
+  -webkit-box-shadow: 0 0 10px #888;
+     -moz-box-shadow: 0 0 10px #888;
+          box-shadow: 0 0 10px #888;
+}
+.ribbon a {
+  border: 1px solid #faa;
+  color: #fff;
+  display: block;
+  font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 1px 0;
+  padding: 10px 50px;
+  text-align: center;
+  text-decoration: none;
+  /* shadow */
+  text-shadow: 0 0 5px #444;
+}
+</style>
+
 
             </div>
             
@@ -432,7 +534,7 @@ private static void increase() {
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/" data-tooltip="java内存模型">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/" data-tooltip="MapReduce并行计算框架介绍">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -460,14 +562,6 @@ private static void increase() {
             <li class="post-action hide-xs">
                 <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
                     <i class="fa fa-star"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
-                    <i class="fa fa-renren"></i>
                 </a>
             </li>
         
@@ -504,14 +598,6 @@ private static void increase() {
                 </a>
             </li>
         
-            
-            
-            <li class="share-option">
-                <a class="share-option-btn" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
-                    <i class="fa fa-renren"></i><span>分享到 Renren</span>
-                </a>
-            </li>
-        
     </ul>
 </div>
 
@@ -520,26 +606,42 @@ private static void increase() {
         
 
 
+    
+        
+    
+
 <div id="about">
     <div id="about-card">
         <div id="about-btn-close">
             <i class="fa fa-remove"></i>
         </div>
         
+            <img id="about-card-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+        
             <h4 id="about-card-name">weiwei02</h4>
         
-            <div id="about-card-bio"><p>author.bio</p>
+            <div id="about-card-bio"><p>技术，改变世界</p>
 </div>
         
         
             <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>author.job</p>
+                <p>软件工程师</p>
 
             </div>
         
         
+            <div id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                北京，海淀
+            </div>
+        
+        <div>
+          <a href="https://weiwei02.github.io/" target="_blank">国外主站</a>
+          <a href="https://weiwei02.cording.me/" target="_blank">国内主站</a>
+        </div>
     </div>
 </div>
 
@@ -565,8 +667,8 @@ private static void increase() {
                 <div class="media">
                     
                     <div class="media-body">
-                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/">
-                            <h3 class="media-heading">java内存模型</h3>
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                            <h3 class="media-heading">MapReduce并行计算框架介绍</h3>
                         </a>
                         <span class="media-meta">
                             <span class="media-date text-small">

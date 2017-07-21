@@ -11,22 +11,24 @@
     
     
     
-    <meta name="description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
-<meta name="keywords" content="java">
+    <meta name="description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  *.class文件介绍  一般来讲.class文件是.java文件在编译器编译后生成的jvm能够运行的文件，*.class文件又常被称为字节码文件。java在创始之初，就提倡“一次编写，处处运行的概念”，在当今编程圈中这个概念早已不是什么特例。java通过将开发人员所编">
+<meta name="keywords" content="java,jvm">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="class文件介绍">
 <meta property="og:url" content="https://weiwei02.github.io/2017/07/21/jvm/class文件说明/index.html">
 <meta property="og:site_name" content="为为技术文档">
-<meta property="og:description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
+<meta property="og:description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  *.class文件介绍  一般来讲.class文件是.java文件在编译器编译后生成的jvm能够运行的文件，*.class文件又常被称为字节码文件。java在创始之初，就提倡“一次编写，处处运行的概念”，在当今编程圈中这个概念早已不是什么特例。java通过将开发人员所编">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-07-20T17:53:25.891Z">
+<meta property="og:updated_time" content="2017-07-21T20:05:08.159Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="class文件介绍">
-<meta name="twitter:description" content="Technical–Documentation共享技术文档 项目简介  为为日常工作和学习的总结。 技术文档主站简介   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。 点击这里直接进入为为技术文档主站，或者访问">
+<meta name="twitter:description" content="非原创声明  本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。  *.class文件介绍  一般来讲.class文件是.java文件在编译器编译后生成的jvm能够运行的文件，*.class文件又常被称为字节码文件。java在创始之初，就提倡“一次编写，处处运行的概念”，在当今编程圈中这个概念早已不是什么特例。java通过将开发人员所编">
     
     
         
     
+    
+        <meta property="og:image" content="https://weiwei02.github.io/assets/images/weiwei.jpg"/>
     
     
     
@@ -43,8 +45,6 @@
             <!-- Define author's picture -->
 
 
-    
-
 <header id="header" data-behavior="4">
     <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
     <div class="header-title">
@@ -52,9 +52,11 @@
     </div>
     
         
-            <a  class="header-right-picture "
+            <a  class="header-right-icon 技术，改变世界"
                 href="#about">
         
+        
+            <i class="fa fa-lg fa-wewei.jpg"></i>
         
         </a>
     
@@ -63,8 +65,23 @@
             <!-- Define author's picture -->
 
 
+
+        
+    
+
 <nav id="sidebar" data-behavior="4">
     <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">weiwei02</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>技术，改变世界</p>
+</h5>
+                
+            </div>
         
         
             <ul class="sidebar-buttons">
@@ -145,6 +162,24 @@
         
             <ul class="sidebar-buttons">
             
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/weiwei02" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="mailto:weiwei02@vip.qq.com" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-envelope-o"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
         </ul>
         
     </div>
@@ -156,7 +191,46 @@
                         hasCoverMetaIn
                         ">
                 
-<article class="post" itemscope itemType="http://schema.org/BlogPosting">
+
+
+<div class="post">
+  <style type="text/css">
+.toc-article {
+  display: block;
+  word-break: break-all;
+  background: none repeat scroll 0 0 # eee;
+  /*margin: 2em 0 0 0.5em;*/
+  float: left;
+  width: 20%;
+  /*top: 76px;
+  bottom: 140px;
+  margin-bottom: 0*/
+  overflow-y: auto;
+  position: fixed;
+  overflow-x: hidden;
+  min-height: 1px;
+}
+.toc-article strong {
+margin-top: 40px;
+font-weight: 700;
+padding-left: 2em;
+color: #0e83cd;
+border-top: 1px solid #e3e3e3;
+text-align: center;
+}
+.toc-article a {
+  cursor: pointer;
+  color: #444;
+  text-decoration: none;
+}
+</style>
+
+<aside id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#class文件介绍"><span class="post-toc-text">*.class文件介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#class类文件的结构"><span class="post-toc-text">class类文件的结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#magic-number-魔数"><span class="post-toc-text">Magic Number 魔数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#版本"><span class="post-toc-text">版本</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#常量池"><span class="post-toc-text">常量池</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#访问标识"><span class="post-toc-text">访问标识</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#类索引"><span class="post-toc-text">类索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#父类索引"><span class="post-toc-text">父类索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#接口索引"><span class="post-toc-text">接口索引</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#字段表集合"><span class="post-toc-text">字段表集合</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关于"><span class="post-toc-text">关于</span></a></li></ol>
+</aside>
+
+<article class="" itemscope itemType="http://schema.org/BlogPosting">
     
     
         <div class="post-header main-content-wrap text-left">
@@ -175,7 +249,7 @@
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/java/">java</a>
+    <a class="category-link" href="/categories/java/">java</a>, <a class="category-link" href="/categories/java/jvm/">jvm</a>
 
 
     
@@ -186,10 +260,8 @@
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <h1 id="Technical–Documentation"><a href="#Technical–Documentation" class="headerlink" title="Technical–Documentation"></a>Technical–Documentation</h1><p>共享技术文档</p>
-<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>  为为日常工作和学习的总结。</p>
-<h3 id="技术文档主站简介"><a href="#技术文档主站简介" class="headerlink" title="技术文档主站简介"></a>技术文档主站简介</h3><p>   主站文档是我在前人的脚步上对研发的学习和总结纪录，在以后的日子里，我会将自己研发工作中所可能遇见问题和心得在这里纪录下来，公开的分享。世界的存在很美好，开源的存在很精彩。从今天起，我便借助开源的力量，向改变人类的生活方式这条路迈进。</p>
-<h5 id="点击这里直接进入为为技术文档主站，或者访问-https-weiwei02-github-io-Technical–Documentation"><a href="#点击这里直接进入为为技术文档主站，或者访问-https-weiwei02-github-io-Technical–Documentation" class="headerlink" title="点击这里直接进入为为技术文档主站，或者访问 https://weiwei02.github.io/Technical–Documentation/"></a>点击这里直接进入<a href="https://weiwei02.github.io/Technical--Documentation/">为为技术文档主站</a>，或者访问 <a href="https://weiwei02.github.io/Technical--Documentation/">https://weiwei02.github.io/Technical–Documentation/</a></h5><h5 id="与文档配套的-Technical–Documentation项目的地址是-https-github-com-weiwei02-Technical-Documentation"><a href="#与文档配套的-Technical–Documentation项目的地址是-https-github-com-weiwei02-Technical-Documentation" class="headerlink" title="与文档配套的 Technical–Documentation项目的地址是 https://github.com/weiwei02/Technical--Documentation"></a>与文档配套的 <a href="https://github.com/weiwei02/Technical--Documentation" target="_blank" rel="external">Technical–Documentation</a>项目的地址是 <a href="https://github.com/weiwei02/Technical--Documentation" target="_blank" rel="external">https://github.com/weiwei02/Technical--Documentation</a></h5><h3 id="非原创声明"><a href="#非原创声明" class="headerlink" title="非原创声明"></a>非原创声明</h3><blockquote>
+            <p>非原创声明</p>
+<blockquote>
 <p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
 </blockquote>
 <h2 id="class文件介绍"><a href="#class文件介绍" class="headerlink" title="*.class文件介绍"></a>*.class文件介绍</h2><p>  一般来讲<em>.class文件是</em>.java文件在编译器编译后生成的jvm能够运行的文件，*.class文件又常被称为字节码文件。java在创始之初，就提倡“一次编写，处处运行的概念”，在当今编程圈中这个概念早已不是什么特例。java通过将开发人员所编写的java代码编译成class文件，然后由jvm虚拟机在执行时将不分平台的class文件中的字节码，再翻译成机器码，交给硬件执行。java就是靠jvm虚拟机的这个设计来实现与平台无关的特性的。class文件不但与硬件平台和操作系统无关，也和具体的编程语言无关，就目前来说，如函数式编程语言scala与Groovy都可以通过自己的编译器将源代码编译成class文件，在jvm上运行。<br>  综合来讲，class文件有以下两点特性：</p>
@@ -299,7 +371,7 @@
 </table>
 <p><em>表 1 class文件格式</em></p>
 <p>   class文件的顺序和格式必须严格实现按照上述规则，否则jvm将不能识别执行。</p>
-<h3 id="Magic-Number-魔数"><a href="#Magic-Number-魔数" class="headerlink" title="Magic Number 魔数"></a>Magic Number 魔数</h3><blockquote>
+<h3 id="magic-number-魔数"><a href="#Magic-Number-魔数" class="headerlink" title="Magic Number 魔数"></a>Magic Number 魔数</h3><blockquote>
 <p>魔数是一个和文件后缀名相似的用于文件格式识别的约定，一般规定文件内容开头的前几个字节为文件的魔数。不同于文件后缀名很容易被用户以重命名的方式进行更改，文件的魔数作为识别手段可以更安全的确定文件的可用性。</p>
 </blockquote>
 <p>  class文件使用前4个字节作为魔数，来确定.class文件是否是一个能够被虚拟机识别的文件，其值是 0xCAFFEBABE 。</p>
@@ -739,7 +811,7 @@
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">标签</span><br/>
                 
-    <a class="tag tag--primary tag--small t-link" href="/tags/java/">java</a>
+    <a class="tag tag--primary tag--small t-link" href="/tags/java/">java</a> <a class="tag tag--primary tag--small t-link" href="/tags/jvm/">jvm</a>
 
             </div>
         
@@ -788,14 +860,6 @@
                 </a>
             </li>
         
-            
-            
-            <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/21/jvm/class文件说明/">
-                    <i class="fa fa-renren"></i>
-                </a>
-            </li>
-        
         
         <li class="post-action">
             
@@ -814,14 +878,56 @@
         
     </div>
 </article>
-
+</div>
 
 
                 <footer id="footer" class="main-content-wrap">
     <span class="copyrights">
         Copyrights &copy; 2017 weiwei02. All Rights Reserved.
+        github空间地址： https://weiwei02.github.io/
+        国内空间地址：   https://weiwei02.cording.me/
     </span>
 </footer>
+<div class="ribbon">
+<a href="https://github.com/weiwei02">Fork me on GitHub</a>
+</div>
+<style type="text/css">
+/**
+fork me on github logo
+*/
+.ribbon {
+  background-color: #a00;
+  overflow: hidden;
+  white-space: nowrap;
+  /* top left corner */
+  position: fixed;
+  right: -50px;
+  top: 40px;
+  /* 45 deg ccw rotation */
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  /* shadow */
+  -webkit-box-shadow: 0 0 10px #888;
+     -moz-box-shadow: 0 0 10px #888;
+          box-shadow: 0 0 10px #888;
+}
+.ribbon a {
+  border: 1px solid #faa;
+  color: #fff;
+  display: block;
+  font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 1px 0;
+  padding: 10px 50px;
+  text-align: center;
+  text-decoration: none;
+  /* shadow */
+  text-shadow: 0 0 5px #444;
+}
+</style>
+
 
             </div>
             
@@ -870,14 +976,6 @@
                 </a>
             </li>
         
-            
-            
-            <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/21/jvm/class文件说明/">
-                    <i class="fa fa-renren"></i>
-                </a>
-            </li>
-        
         
         <li class="post-action">
             
@@ -911,14 +1009,6 @@
                 </a>
             </li>
         
-            
-            
-            <li class="share-option">
-                <a class="share-option-btn" target="new" href="http://widget.renren.com/dialog/share?resourceUrl=https://weiwei02.github.io/2017/07/21/jvm/class文件说明/">
-                    <i class="fa fa-renren"></i><span>分享到 Renren</span>
-                </a>
-            </li>
-        
     </ul>
 </div>
 
@@ -927,26 +1017,42 @@
         
 
 
+    
+        
+    
+
 <div id="about">
     <div id="about-card">
         <div id="about-btn-close">
             <i class="fa fa-remove"></i>
         </div>
         
+            <img id="about-card-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+        
             <h4 id="about-card-name">weiwei02</h4>
         
-            <div id="about-card-bio"><p>author.bio</p>
+            <div id="about-card-bio"><p>技术，改变世界</p>
 </div>
         
         
             <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>author.job</p>
+                <p>软件工程师</p>
 
             </div>
         
         
+            <div id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                北京，海淀
+            </div>
+        
+        <div>
+          <a href="https://weiwei02.github.io/" target="_blank">国外主站</a>
+          <a href="https://weiwei02.cording.me/" target="_blank">国内主站</a>
+        </div>
     </div>
 </div>
 
@@ -972,8 +1078,8 @@
                 <div class="media">
                     
                     <div class="media-body">
-                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/">
-                            <h3 class="media-heading">java内存模型</h3>
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                            <h3 class="media-heading">MapReduce并行计算框架介绍</h3>
                         </a>
                         <span class="media-meta">
                             <span class="media-date text-small">

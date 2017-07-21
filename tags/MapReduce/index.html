@@ -6,21 +6,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="为为技术文档">
-    <title>all-archives - 为为技术文档</title>
+    <title>标签: MapReduce - 为为技术文档</title>
     <meta name="author" content="weiwei02">
     
     
     
     <meta name="description" content="技术改变世界">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="all-archives">
-<meta property="og:url" content="https://weiwei02.github.io/all-archives/index.html">
+<meta property="og:title" content="为为技术文档">
+<meta property="og:url" content="https://weiwei02.github.io/tags/MapReduce/index.html">
 <meta property="og:site_name" content="为为技术文档">
 <meta property="og:description" content="技术改变世界">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-07-20T18:38:05.943Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="all-archives">
+<meta name="twitter:title" content="为为技术文档">
 <meta name="twitter:description" content="技术改变世界">
     
     
@@ -190,68 +189,182 @@
                         hasCoverMetaIn
                         ">
                 
-<div id="archives" class="main-content-wrap">
-    <form id="filter-form" action="#">
-        <input name="date" type="text" class="form-control input--xlarge" placeholder="搜索日期 (YYYY/MM/DD)" autofocus="autofocus">
-    </form>
-    <h5 class="archive-result text-color-base text-xlarge"
-        data-message-zero="没有找到文章"
-        data-message-one="找到 1 篇文章"
-        data-message-other="找到 {n} 篇文章"></h5>
-    <section class="boxes">
+    <section class="postShorten-group main-content-wrap">
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title" itemprop="headline">
+                    
+                        <a class="link-unstyled" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                            MapReduce并行计算框架介绍
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time itemprop="datePublished" datetime="2017-02-04T00:19:24+08:00">
+	
+		    2月 04, 2017
+    	
+    </time>
+    
+        <span>发布在 </span>
         
-            
-            
-            
-                
-                
-                <div class="archive archive-year box" data-date="2017">
-                    <h4 class="archive-title">
-                        <a class="link-unstyled" href="/archives/2017">2017</a>
-                    </h4>
-            
-            
-                
-                <ul class="archive-posts archive-month" data-date="201707">
-                    <h5 class="archive-title">
-                        <a class="link-unstyled" href="/archives/2017/07">七月</a>
-                    </h5>
-                
-            
-            <li class="archive-post archive-day" data-date="20170721">
-                <a class="archive-post-title" href="/2017/07/21/jvm/class文件说明/">class文件介绍</a>
-                <span class="archive-post-date"> - 7月 21, 2017</span>
-            </li>
-        
-            
-            
-            
-            
-            <li class="archive-post archive-day" data-date="20170702">
-                <a class="archive-post-title" href="/2017/07/02/jvm/001-java内存模型/">java内存模型</a>
-                <span class="archive-post-date"> - 7月 02, 2017</span>
-            </li>
-        
-            
-            
-            
-            
-                
-                    </ul>
-                
-                <ul class="archive-posts archive-month" data-date="201702">
-                    <h5 class="archive-title">
-                        <a class="link-unstyled" href="/archives/2017/02">二月</a>
-                    </h5>
-                
-            
-            <li class="archive-post archive-day" data-date="20170204">
-                <a class="archive-post-title" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">MapReduce并行计算框架介绍</a>
-                <span class="archive-post-date"> - 2月 04, 2017</span>
-            </li>
-        
-    </section>
+    <a class="category-link" href="/categories/bigdata/">bigdata</a>, <a class="category-link" href="/categories/bigdata/hadoop/">hadoop</a>
+
+
+    
 </div>
+
+            </div>
+            
+                <div class="postShorten-content" itemprop="articleBody">
+                    <h1 id="关于mapreduce"><a href="#关于MapReduce" class="headerlink" title="关于MapReduce"></a>关于MapReduce</h1><p>   MapReduce是一种可用于数据处理的编程模型。MapReduce程序本质上是并行运行的，<br>   因此可以将大规模的数据分析任务分发给任何一个拥有足够多机器的数据中心，充分利用Hadoop<br>   提供的并行计算的优势。</p>
+<h2 id="使用hadoop来分析数据"><a href="#使用Hadoop来分析数据" class="headerlink" title="使用Hadoop来分析数据"></a>使用Hadoop来分析数据</h2><p>   MapReduce任务过程分为两个处理阶段：map阶段和reduce阶段。每个阶段都以键/值对作为<br>   输入和输出，其类型由程序员来选择。程序员还需要写两个函数，map函数和reduce函数.<br>   示例取自《Hadoop权威指南-第三版》</p>
+<h4 id="1-创建查找最高气温的mapper类"><a href="#1-创建查找最高气温的Mapper类" class="headerlink" title="1. 创建查找最高气温的Mapper类"></a>1. 创建查找最高气温的Mapper类</h4><pre><code>package com.hadoopbook.ch02;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+import java.io.IOException;
+
+/**
+ * [@author](https://my.oschina.net/arthor) WangWeiwei
+ * [@version](https://my.oschina.net/u/931210) 1.0
+ * [@sine](https://my.oschina.net/mysine) 17-2-4
+ * 查找最高气温的mapper类
+ */
+public class MaxTemperatureMapper extends  Mapper&lt;LongWritable,Text,Text,IntWritable&gt; {
+    private static final int MISSING = 9999;
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        String line = value.toString();
+        String year = line.substring(15,19);
+        int airTemperature;
+        if (line.charAt(87) == &apos;+&apos;){
+            // parseInt doesn&apos;t like leading plus signs
+            airTemperature = Integer.parseInt(line.substring(88, 92));
+        }else {
+            airTemperature = Integer.parseInt(line.substring(87, 92));
+        }
+        String quality = line.substring(92, 93);
+        if (airTemperature != MISSING &amp;&amp; quality.matches(&quot;[01459]&quot;)) {
+            context.write(new Text(year), new IntWritable(airTemperature));
+        }
+    }
+
+    public MaxTemperatureMapper() {
+        super();
+    }
+}
+</code></pre><p>   这个mapper类是一个泛型类型，它有四个形参类型，分别指定map函数的输入键/输入值/输出键和输出值的类型。<br>   Hadoop本身提供了一套可优化网络序列化传输的基本类型，而不是直接使用java内嵌的类型。这些类型都在<br>   org.apache.hadoop.io包里。<br>   map() 方法的输入是一个键和一个值，方法还提供了context实例用于输出内容的写入。</p>
+<h4 id="2-查找最高气温的reducer类"><a href="#2-查找最高气温的reducer类" class="headerlink" title="2. 查找最高气温的reducer类"></a>2. 查找最高气温的reducer类</h4><p>   类似于上的方法，使用Reducer来定义reduce函数.</p>
+<pre><code>package com.hadoopbook.ch02;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+import java.io.IOException;
+
+/**
+ * [@author](https://my.oschina.net/arthor) WangWeiwei
+ * @version 1.0
+ * @sine 17-2-4
+ * 查找最高气温的Reducer类
+ */
+public class MaxTemperatureReducer extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
+    public MaxTemperatureReducer() {
+        super();
+    }
+
+    @Override
+    protected void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException {
+        int maxValue = Integer.MIN_VALUE;
+        for (IntWritable value : values){
+            maxValue = Math.max(maxValue, value.get());
+        }
+        context.write(key,new IntWritable(maxValue));
+    }
+}
+</code></pre><p>   同样，reduce函数也有四个形式参数类型用于指定输入和输出类型。reduce函数的输入类型必须匹配map函数<br>   的输出类型：即TEXT类型和IntWritable类型。</p>
+<h4 id="3-mapreduce作业"><a href="#3-MapReduce作业" class="headerlink" title="3. MapReduce作业"></a>3. MapReduce作业</h4><p>   指定一个作业对象，在这个应用中用来在气象数据集中找出最高气温</p>
+<pre><code>package com.hadoopbook.ch02;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+/**
+ * @author WangWeiwei
+ * @version 1.0
+ * @sine 17-2-4
+ * MaxTemperature Application to find the maximum temperature in the weather dataset
+ */
+public class MaxTemperature {
+    public static void main(String[] args) throws Exception{
+        if (args.length != 2){
+            System.err.println(&quot;Usage: MaxTemperature &lt;input path&gt; &lt;output path&gt;&quot;);
+            System.exit(-1);
+        }
+
+        Job job = new Job();
+        job.setJarByClass(MaxTemperature.class);
+        job.setJobName(&quot;Max Temperature&quot;);
+
+        FileInputFormat.addInputPath(job,new Path(args[0]));
+        FileOutputFormat.setOutputPath(job,new Path(args[1]));
+
+        job.setMapperClass(MaxTemperatureMapper.class);
+        job.setReducerClass(MaxTemperatureReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}
+</code></pre><p>   Job对象指定作业的执行规范。我们可以使用它来控制整个作业的运行。我们在Hadoop集群上运行这个作业时，<br>   要把它打包成一个JAR文件（Hadoop在集群上发布这个文件）。不必明确指定JAR文件的名称，在Job对象的<br>   setJarByClass方法中传递一个类即可，Hadoop利用这个类来查找包含它的JAR文件，进而找到相关的JAR文件。</p>
+<p>   构造Job对象之后，需要指定输入和输出数据路径。调用FileInputFormat类的静态方法addInputPath()<br>   来定义输入数据的路径，这个路径可以是单个文件/一个目录（此时目录下的所有文件当作输入）或符合特定文件模式的一系列文件。<br>   由函数名可知，可以多次调用addInputPath()方法。</p>
+<p>   调用FIleOutFormat类中的静态方法setOutputPath()来指定输出路径，只能有一个输出路径。这个方法指定的是<br>   reduce函数输出文件的写入目录。在运行作业前该目录是不应该存在的，否则Hadoop会报错，并拒绝运行作业。<br>   这种预防措施的目的是防止数据丢失（长时间运行的作业如果结果被意外覆盖，肯定是非常恼人的）</p>
+<p>   接着通过setMapperClass()和setReducerClass()指定map类型和reduce类型。</p>
+<p>   setOutputKeyClass() 和 setOutputValueClass() 控制map和reduce函数的输出类型。</p>
+<p>   在设置定义map和reduce函数的类后，可以开始运行作业。job中的waitForCompletion()方法返回一个布尔值。</p>
+
+                    
+                        
+                    
+                    
+                        <p>
+                            <a href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/#post-footer" class="postShorten-excerpt_link link">
+                                评论和共享
+                            </a>
+                        </p>
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    <div class="pagination-bar">
+    <ul class="pagination">
+        
+        
+        <li class="pagination-number">第 1 页 共 1 页</li>
+    </ul>
+</div>
+
+</section>
+
 
                 <footer id="footer" class="main-content-wrap">
     <span class="copyrights">

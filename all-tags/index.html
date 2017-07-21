@@ -27,6 +27,8 @@
         
     
     
+        <meta property="og:image" content="https://weiwei02.github.io/assets/images/weiwei.jpg"/>
+    
     
     
     
@@ -42,8 +44,6 @@
             <!-- Define author's picture -->
 
 
-    
-
 <header id="header" data-behavior="1">
     <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
     <div class="header-title">
@@ -51,9 +51,11 @@
     </div>
     
         
-            <a  class="header-right-picture "
+            <a  class="header-right-icon 技术，改变世界"
                 href="#about">
         
+        
+            <i class="fa fa-lg fa-wewei.jpg"></i>
         
         </a>
     
@@ -62,8 +64,23 @@
             <!-- Define author's picture -->
 
 
+
+        
+    
+
 <nav id="sidebar" data-behavior="1">
     <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">weiwei02</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>技术，改变世界</p>
+</h5>
+                
+            </div>
         
         
             <ul class="sidebar-buttons">
@@ -144,6 +161,24 @@
         
             <ul class="sidebar-buttons">
             
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/weiwei02" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="mailto:weiwei02@vip.qq.com" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-envelope-o"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
         </ul>
         
     </div>
@@ -165,17 +200,93 @@
 
         <section>
         
+            <a class="tag tag--primary tag--small" href="#MapReduce-list" data-tag="mapreduce">
+                MapReduce
+            </a>
+        
+            <a class="tag tag--primary tag--small" href="#bigdata-list" data-tag="bigdata">
+                bigdata
+            </a>
+        
+            <a class="tag tag--primary tag--small" href="#hadoop-list" data-tag="hadoop">
+                hadoop
+            </a>
+        
             <a class="tag tag--primary tag--small" href="#java-list" data-tag="java">
                 java
+            </a>
+        
+            <a class="tag tag--primary tag--small" href="#jvm-list" data-tag="jvm">
+                jvm
             </a>
         
     </section>
     <section class="boxes">
         
+            <div id="MapReduce-list" class="archive box" data-tag="mapreduce">
+                <h4 class="archive-title">
+                    <a class="link-unstyled" href="/tags/MapReduce">
+                        MapReduce (1)
+                    </a>
+                </h4>
+                <ul class="archive-posts">
+                    
+                        <li class="archive-post">
+                            <a class="archive-post-title" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                                MapReduce并行计算框架介绍
+                            </a>
+                            <span class="archive-post-date">
+                                 - 2月 04, 2017
+                            </span>
+                        </li>
+                    
+                </ul>
+            </div>
+        
+            <div id="bigdata-list" class="archive box" data-tag="bigdata">
+                <h4 class="archive-title">
+                    <a class="link-unstyled" href="/tags/bigdata">
+                        bigdata (1)
+                    </a>
+                </h4>
+                <ul class="archive-posts">
+                    
+                        <li class="archive-post">
+                            <a class="archive-post-title" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                                MapReduce并行计算框架介绍
+                            </a>
+                            <span class="archive-post-date">
+                                 - 2月 04, 2017
+                            </span>
+                        </li>
+                    
+                </ul>
+            </div>
+        
+            <div id="hadoop-list" class="archive box" data-tag="hadoop">
+                <h4 class="archive-title">
+                    <a class="link-unstyled" href="/tags/hadoop">
+                        hadoop (1)
+                    </a>
+                </h4>
+                <ul class="archive-posts">
+                    
+                        <li class="archive-post">
+                            <a class="archive-post-title" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                                MapReduce并行计算框架介绍
+                            </a>
+                            <span class="archive-post-date">
+                                 - 2月 04, 2017
+                            </span>
+                        </li>
+                    
+                </ul>
+            </div>
+        
             <div id="java-list" class="archive box" data-tag="java">
                 <h4 class="archive-title">
                     <a class="link-unstyled" href="/tags/java">
-                        java (3)
+                        java (2)
                     </a>
                 </h4>
                 <ul class="archive-posts">
@@ -198,12 +309,32 @@
                             </span>
                         </li>
                     
+                </ul>
+            </div>
+        
+            <div id="jvm-list" class="archive box" data-tag="jvm">
+                <h4 class="archive-title">
+                    <a class="link-unstyled" href="/tags/jvm">
+                        jvm (2)
+                    </a>
+                </h4>
+                <ul class="archive-posts">
+                    
                         <li class="archive-post">
-                            <a class="archive-post-title" href="/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/">
+                            <a class="archive-post-title" href="/2017/07/02/jvm/001-java内存模型/">
                                 java内存模型
                             </a>
                             <span class="archive-post-date">
-                                 - 2月 04, 2017
+                                 - 7月 02, 2017
+                            </span>
+                        </li>
+                    
+                        <li class="archive-post">
+                            <a class="archive-post-title" href="/2017/07/21/jvm/class文件说明/">
+                                class文件介绍
+                            </a>
+                            <span class="archive-post-date">
+                                 - 7月 21, 2017
                             </span>
                         </li>
                     
@@ -216,8 +347,50 @@
                 <footer id="footer" class="main-content-wrap">
     <span class="copyrights">
         Copyrights &copy; 2017 weiwei02. All Rights Reserved.
+        github空间地址： https://weiwei02.github.io/
+        国内空间地址：   https://weiwei02.cording.me/
     </span>
 </footer>
+<div class="ribbon">
+<a href="https://github.com/weiwei02">Fork me on GitHub</a>
+</div>
+<style type="text/css">
+/**
+fork me on github logo
+*/
+.ribbon {
+  background-color: #a00;
+  overflow: hidden;
+  white-space: nowrap;
+  /* top left corner */
+  position: fixed;
+  right: -50px;
+  top: 40px;
+  /* 45 deg ccw rotation */
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  /* shadow */
+  -webkit-box-shadow: 0 0 10px #888;
+     -moz-box-shadow: 0 0 10px #888;
+          box-shadow: 0 0 10px #888;
+}
+.ribbon a {
+  border: 1px solid #faa;
+  color: #fff;
+  display: block;
+  font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 1px 0;
+  padding: 10px 50px;
+  text-align: center;
+  text-decoration: none;
+  /* shadow */
+  text-shadow: 0 0 5px #444;
+}
+</style>
+
 
             </div>
             
@@ -225,26 +398,42 @@
         
 
 
+    
+        
+    
+
 <div id="about">
     <div id="about-card">
         <div id="about-btn-close">
             <i class="fa fa-remove"></i>
         </div>
         
+            <img id="about-card-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+        
             <h4 id="about-card-name">weiwei02</h4>
         
-            <div id="about-card-bio"><p>author.bio</p>
+            <div id="about-card-bio"><p>技术，改变世界</p>
 </div>
         
         
             <div id="about-card-job">
                 <i class="fa fa-briefcase"></i>
                 <br/>
-                <p>author.job</p>
+                <p>软件工程师</p>
 
             </div>
         
         
+            <div id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                北京，海淀
+            </div>
+        
+        <div>
+          <a href="https://weiwei02.github.io/" target="_blank">国外主站</a>
+          <a href="https://weiwei02.cording.me/" target="_blank">国内主站</a>
+        </div>
     </div>
 </div>
 
@@ -270,8 +459,8 @@
                 <div class="media">
                     
                     <div class="media-body">
-                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/0001-MapReduce并行计算框架介绍/">
-                            <h3 class="media-heading">java内存模型</h3>
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                            <h3 class="media-heading">MapReduce并行计算框架介绍</h3>
                         </a>
                         <span class="media-meta">
                             <span class="media-date text-small">
