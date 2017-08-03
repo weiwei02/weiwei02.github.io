@@ -197,6 +197,81 @@
             <div class="postShorten-header">
                 <h1 class="postShorten-title" itemprop="headline">
                     
+                        <a class="link-unstyled" href="/2017/08/03/database/theory/CAP原理/">
+                            数据CAP原理
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time itemprop="datePublished" datetime="2017-08-03T10:41:00+08:00">
+	
+		    8月 03, 2017
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/database/">database</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-content" itemprop="articleBody">
+                    <p>#CAP原理</p>
+<h2 id="高可用的数据"><a href="#高可用的数据" class="headerlink" title="高可用的数据"></a>高可用的数据</h2><p>   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。<br>   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。</p>
+<h2 id="cap"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>   CAP理论是分布式系统中对数据的管理而形成一套理论知识，CAP是设计分布式系统所必须考虑的架构问题。对于CAP本身可以解释如下：</p>
+<ul>
+<li>Consistency(一致性)： 数据一致更新，所有数据变动都是同步的</li>
+<li>Availability(可用性)： 好的响应性能</li>
+<li><p>Partition tolerance(分区耐受性)： 可靠性</p>
+<p>上面的解释可能显得太过抽象，举例来说在高可用的网站架构中，对于数据基础提出了以下的要求：</p>
+</li>
+<li><p><strong>分区耐受性</strong><br>保证数据可持久存储，在各种情况下都不会出现数据丢失的问题。为了实现数据的持久性，不但需要在写入的时候保证数据能够持久存储，还需要能够将数据备份一个或多个副本，存放在不同的物理设备上，防止某个存储设备发生故障时，数据不会丢失。  </p>
+</li>
+<li><strong>数据一致性</strong><br>在数据有多份副本的情况下，如果网络、服务器、软件出现了故障，会导致部分副本写入失败。这就造成了多个副本之间的数据不一致，数据内容冲突。</li>
+<li><p><strong>数据可用性</strong><br>多个副本分别存储于不同的物理设备的情况下，如果某个设备损坏，就需要从另一个数据存储设备上访问数据。如果这个过程不能很快完成，或者在完成的过程中需要停止终端用户访问数据，那么在切换存储设备的这段时间内，数据就是不可访问的。</p>
+<p>CAP原理认为，一个提供数据服务的存储系统无法同时完美的满足一致性（Consistency）、数据可用性（Availability）、分区耐受性（Partition Tolerance）这三个条件。对于三者的关系见图1.</p>
+
+<p>图1 CAP原理关系图</p>
+<p>在实际的大型网络应用中，数据的规模会快速扩张，因此数据架构的伸缩性（分区耐受性）必不可少。当规模变大之后，机器的数量也会增大，这时网络和服务器故障会更频繁出现，想要保证应用可用，就必须保证分布式处理系统的高可用性。所以在大型网站中，通常会选择强化分布式存储系统的可用性（A）和伸缩性（P），在某种程度上放弃一致性（C）。一般来说，数据不一致的情况通常出现在高并发写操作或者集群状态不稳（故障恢复，集群扩容…）的情况下，应用系统需要对分布式数据处理系统的数据不一致性有一定的了解并进行某种意义上的补偿工作，以避免应用出现数据不正确。  </p>
+<p>CAP原理对于可伸缩的分布式系统设计具有重要的意义，在系统设计开发过程中，不恰当的迎合各种需求，企图打造一个完美的产品，可能会使设计进入两难之地，难以为继。<br>具体来说，数据一致性又可分为以下几点：</p>
+</li>
+<li><strong>数据强一致</strong><br>各个副本中的数据总是强一致的。这种设计正确性很高，但是会在一定程度上损耗性能。</li>
+<li><strong>数据用户一致</strong><br>应用访问数据时通过一定的纠错和校验机制，把多个数据可能不一致的副本的数据综合计算返回一个一致且确定的数据给用户。大型互联网架构一般采用这种设计，性能较好，并且数据不会出现错误。</li>
+<li><p><strong>数据最终一致</strong><br>物理存储的数据不一致，用户访问得到的数据也可能不一致，但经过一段时间的自我修正（通常很短时间），数据会达到最终一致。该设计性能最高，但可能有数据错误。</p>
+<p>因为很难去同时满足CAP，大型网站通常会综合成本、技术、业务场景等条件，结合应用服务和其它的数据监控与纠错功能，使存储系统达到用户一致，保证用户最终访问数据的正确性。</p>
+<blockquote>
+<p>20170804 18:10:00 编辑到多种数据一致性</p>
+</blockquote>
+</li>
+</ul>
+
+                    
+                        
+                    
+                    
+                        <p>
+                            <a href="/2017/08/03/database/theory/CAP原理/#post-footer" class="postShorten-excerpt_link link">
+                                评论和共享
+                            </a>
+                        </p>
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title" itemprop="headline">
+                    
                         <a class="link-unstyled" href="/2017/07/21/jvm/class文件说明/">
                             class文件介绍
                         </a>
@@ -917,7 +992,7 @@
 </blockquote>
 <h2 id="java内存模型"><a href="#JAVA内存模型" class="headerlink" title="JAVA内存模型"></a>JAVA内存模型</h2><p>   犹记得大学时操作系统课上，我们迷茫的眼神注视着带着厚眼镜教授向我们一遍遍的强调，一个程序最少有一个进程组成，进程是操作系统提供独立资源供应用程序运行的基本单位。另外老师向我们讲到，为了更好的提高计算机的并行计算能力，计算机科学家们又设计了线程。线程是比进程更小的单位，一个进程可以由多个线程组成。同时线程也是在得到cpu时间片时可运行的最小的单位。尤记得在这些理论基础下，我慢慢的学会了使用C在LINUX环境下使用多进程和多线程进行编程。这些并发API都是LINUX提供的标准API，程序在编译链接之后可以直接调用通过系统内核创建进程或线程，在类UNIX操作系统下这样去做可以让程序有更高的性能。但是这种编程方式所编写出来的代码是与操作系统绑定的，我在linux下明明可以完美运行的代码，在windows下连编译甚至都做不到。除非是用 windows API重新把与操作系统进行交互的那些代码给替换掉，否则就不要想着让程序去跨平台运行了。<br>   在进行并发编程时相对于C，我更喜欢java的编程体验。java消除操作系统之间的差异，原生的对多线程应用提供了很好的支持，特别是在jdk1.5之后，jdk还提供了currency包，更好的让程序员们无需去关注并发的难点与细节，更专心的关注应用的业务需求实现。<br>   在多线程编程中最长遇到的问题就是线程安全问题，其中又以内存中的数据安全问题最为常见(这个数据安全指的是发生脏读、幻读等并发编程中会遇到的错误)。为了消除不同硬件和操作系统对内存操作的差异，在硬件设备和操作系统的内存模型之上，java虚拟机规范定义了一种java内存模型(JAVA Memory Model,简称JMM)，将内存分为了工作内存和主内存。JMM主要定义了JVM中在内存中操作变量的规则和细节，用来解决在并发竞争对变量操作时可能会发生的各种问题。JMM完全兼容CPU的多级cache机制，并且支持编译器的代码重排序。<br>   注意：JMM内存模型的概念不同于jvm中6大内存区域的概念，两者不可强行混为一谈。</p>
 <h3 id="主内存和工作内存"><a href="#主内存和工作内存" class="headerlink" title="主内存和工作内存"></a>主内存和工作内存</h3><p>  JMM规定了所有的全局变量都存于主内存(Main Memory)中，一般情况下这些全局变量都会被保存到堆里。每个线程都有自己的工作内存(Working Memory)，工作内存中会保存当前线程所需用到的主内存中全局变量的拷贝和自己的局部变量。一般情况下工作内存指的是栈内存，从物理上来讲，工作内存一般情况下都会工作于cpu的cache里。一个线程对全局变量的任何操作必须在自己的工作内存中进行，不允许直接操作工作内存。不同线程不能访问对方的工作内容，只能通过主内存进行数据交换。</p>
-<p>  <img src="" alt="JMM关系图"></p>
+  
 <blockquote>
 <p>工作内存在对主内存中变量做拷贝时，如果变量是基本类型的，则会拷贝其值；如果是引用类型的，那么仅仅会拷贝其引用</p>
 </blockquote>
@@ -1036,7 +1111,18 @@ private static void increase() {
 }
 }
 </code></pre><p>   代码1 volatile 线程安全测试</p>
-<p>   程序的执行结果如图2所示。<br>   <img src="" alt="volatile 线程安全测试"></p>
+<p>   程序的执行结果如图2所示。<br>   <img src="/images/java/jvm/volatile数据错误.jpg" alt="volatile 线程安全测试"></p>
+<p>   这个程序执行的结果应该是20000，可实际执行所得到的结果只有18439.并且多次执行本程序都会得到不一样的结果。所以会出现这种情况的原因是 race++ 这个操作并不是原子操作，volatile关键字只能保证在使用race变量时，工作线程能够从主内存中拿取最新的race的值，并不能保证进行过++操作之后写回到主内存期间其它线程没有对race变量进行修改。<br>   volatile关键字只能保证可见性，只有在以下两种条件下，我们可以认为volatile是线程安全的；</p>
+<ol>
+<li>运算结果并不依赖变量的当前值，或者能够保证只有一个线程修改变量的值。</li>
+<li><p>变量不需要与其它的变脸共同参与不变约束。</p>
+<p>当不符合这两种条件时，想要保证volatile变量的原子性，只能通过 <strong>锁</strong> 机制来实现。</p>
+<p>volatile变量的第二个重要作用是禁止编译器进行指令重排序。普通的变量仅仅会保证在该方法的执行过程中所有依赖赋值结果的地方都能获取到正确结果，而不能保证变量赋值操作的顺序与程序代码中的执行顺序一致。从硬件层面上来讲，是指CPU允许多条指令不按程序规定的顺序分开发送到个相应的电路单元来处理。CPU必须要正确的处理指令的依赖情况，不能将指令任意的排序。比如指令1把地址A中的值加10，指令2把地址A中的值乘以2，指令3将地址B中的值减去3。在这一系列指令中，指令1,2之间是有依赖关系的，不能进行重排序。但指令3的执行顺序可以改到指令1之前也可以放到指令1之后，只要能够保证在执行完毕这三条指令程序中A，B的值是正确的即可。volatile在某些情况下性能高于锁，由于虚拟机对锁实行有多种消除和优化，我们很难衡量volatile会比锁快多少。</p>
+</li>
+</ol>
+<h3 id="原子性-可见性和有序性"><a href="#原子性、可见性和有序性" class="headerlink" title="原子性、可见性和有序性"></a>原子性、可见性和有序性</h3><blockquote>
+<p>20170803 23:11:51 编辑到字段表集合</p>
+</blockquote>
 <h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>  本文是对class文件的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
 <ol>
 <li>《The Java Virtual Machine Specification》</li>
@@ -1403,6 +1489,25 @@ fork me on github logo
                     <hr>
                 </div>
                 
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/">
+                            <h3 class="media-heading">数据CAP原理</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月3日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
             </div>
         </div>
         <div class="modal-footer">
@@ -1410,7 +1515,7 @@ fork me on github logo
                 data-message-zero="没有找到文章"
                 data-message-one="找到 1 篇文章"
                 data-message-other="找到 {n} 篇文章">
-                找到 3 篇文章
+                找到 4 篇文章
             </p>
         </div>
     </div>

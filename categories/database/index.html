@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="为为技术文档">
-    <title>分类: hadoop - 为为技术文档</title>
+    <title>分类: database - 为为技术文档</title>
     <meta name="author" content="weiwei02">
     
     
@@ -14,7 +14,7 @@
     <meta name="description" content="技术改变世界">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="为为技术文档">
-<meta property="og:url" content="https://weiwei02.github.io/categories/bigdata/hadoop/index.html">
+<meta property="og:url" content="https://weiwei02.github.io/categories/database/index.html">
 <meta property="og:site_name" content="为为技术文档">
 <meta property="og:description" content="技术改变世界">
 <meta property="og:locale" content="zh-cn">
@@ -198,21 +198,21 @@
             <div class="postShorten-header">
                 <h1 class="postShorten-title" itemprop="headline">
                     
-                        <a class="link-unstyled" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
-                            MapReduce并行计算框架介绍
+                        <a class="link-unstyled" href="/2017/08/03/database/theory/CAP原理/">
+                            数据CAP原理
                         </a>
                     
                 </h1>
                 <div class="postShorten-meta">
-    <time itemprop="datePublished" datetime="2017-02-04T00:19:24+08:00">
+    <time itemprop="datePublished" datetime="2017-08-03T10:41:00+08:00">
 	
-		    2月 04, 2017
+		    8月 03, 2017
     	
     </time>
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/bigdata/">bigdata</a>, <a class="category-link" href="/categories/bigdata/hadoop/">hadoop</a>
+    <a class="category-link" href="/categories/database/">database</a>
 
 
     
@@ -221,130 +221,41 @@
             </div>
             
                 <div class="postShorten-content" itemprop="articleBody">
-                    <h1 id="关于mapreduce"><a href="#关于MapReduce" class="headerlink" title="关于MapReduce"></a>关于MapReduce</h1><p>   MapReduce是一种可用于数据处理的编程模型。MapReduce程序本质上是并行运行的，<br>   因此可以将大规模的数据分析任务分发给任何一个拥有足够多机器的数据中心，充分利用Hadoop<br>   提供的并行计算的优势。</p>
-<h2 id="使用hadoop来分析数据"><a href="#使用Hadoop来分析数据" class="headerlink" title="使用Hadoop来分析数据"></a>使用Hadoop来分析数据</h2><p>   MapReduce任务过程分为两个处理阶段：map阶段和reduce阶段。每个阶段都以键/值对作为<br>   输入和输出，其类型由程序员来选择。程序员还需要写两个函数，map函数和reduce函数.<br>   示例取自《Hadoop权威指南-第三版》</p>
-<h4 id="1-创建查找最高气温的mapper类"><a href="#1-创建查找最高气温的Mapper类" class="headerlink" title="1. 创建查找最高气温的Mapper类"></a>1. 创建查找最高气温的Mapper类</h4><pre><code>package com.hadoopbook.ch02;
+                    <p>#CAP原理</p>
+<h2 id="高可用的数据"><a href="#高可用的数据" class="headerlink" title="高可用的数据"></a>高可用的数据</h2><p>   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。<br>   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。</p>
+<h2 id="cap"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>   CAP理论是分布式系统中对数据的管理而形成一套理论知识，CAP是设计分布式系统所必须考虑的架构问题。对于CAP本身可以解释如下：</p>
+<ul>
+<li>Consistency(一致性)： 数据一致更新，所有数据变动都是同步的</li>
+<li>Availability(可用性)： 好的响应性能</li>
+<li><p>Partition tolerance(分区耐受性)： 可靠性</p>
+<p>上面的解释可能显得太过抽象，举例来说在高可用的网站架构中，对于数据基础提出了以下的要求：</p>
+</li>
+<li><p><strong>分区耐受性</strong><br>保证数据可持久存储，在各种情况下都不会出现数据丢失的问题。为了实现数据的持久性，不但需要在写入的时候保证数据能够持久存储，还需要能够将数据备份一个或多个副本，存放在不同的物理设备上，防止某个存储设备发生故障时，数据不会丢失。  </p>
+</li>
+<li><strong>数据一致性</strong><br>在数据有多份副本的情况下，如果网络、服务器、软件出现了故障，会导致部分副本写入失败。这就造成了多个副本之间的数据不一致，数据内容冲突。</li>
+<li><p><strong>数据可用性</strong><br>多个副本分别存储于不同的物理设备的情况下，如果某个设备损坏，就需要从另一个数据存储设备上访问数据。如果这个过程不能很快完成，或者在完成的过程中需要停止终端用户访问数据，那么在切换存储设备的这段时间内，数据就是不可访问的。</p>
+<p>CAP原理认为，一个提供数据服务的存储系统无法同时完美的满足一致性（Consistency）、数据可用性（Availability）、分区耐受性（Partition Tolerance）这三个条件。对于三者的关系见图1.</p>
 
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
-import java.io.IOException;
-
-/**
- * [@author](https://my.oschina.net/arthor) WangWeiwei
- * [@version](https://my.oschina.net/u/931210) 1.0
- * [@sine](https://my.oschina.net/mysine) 17-2-4
- * 查找最高气温的mapper类
- */
-public class MaxTemperatureMapper extends  Mapper&lt;LongWritable,Text,Text,IntWritable&gt; {
-    private static final int MISSING = 9999;
-
-    @Override
-    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        String line = value.toString();
-        String year = line.substring(15,19);
-        int airTemperature;
-        if (line.charAt(87) == &apos;+&apos;){
-            // parseInt doesn&apos;t like leading plus signs
-            airTemperature = Integer.parseInt(line.substring(88, 92));
-        }else {
-            airTemperature = Integer.parseInt(line.substring(87, 92));
-        }
-        String quality = line.substring(92, 93);
-        if (airTemperature != MISSING &amp;&amp; quality.matches(&quot;[01459]&quot;)) {
-            context.write(new Text(year), new IntWritable(airTemperature));
-        }
-    }
-
-    public MaxTemperatureMapper() {
-        super();
-    }
-}
-</code></pre><p>   这个mapper类是一个泛型类型，它有四个形参类型，分别指定map函数的输入键/输入值/输出键和输出值的类型。<br>   Hadoop本身提供了一套可优化网络序列化传输的基本类型，而不是直接使用java内嵌的类型。这些类型都在<br>   org.apache.hadoop.io包里。<br>   map() 方法的输入是一个键和一个值，方法还提供了context实例用于输出内容的写入。</p>
-<h4 id="2-查找最高气温的reducer类"><a href="#2-查找最高气温的reducer类" class="headerlink" title="2. 查找最高气温的reducer类"></a>2. 查找最高气温的reducer类</h4><p>   类似于上的方法，使用Reducer来定义reduce函数.</p>
-<pre><code>package com.hadoopbook.ch02;
-
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
-import java.io.IOException;
-
-/**
- * [@author](https://my.oschina.net/arthor) WangWeiwei
- * @version 1.0
- * @sine 17-2-4
- * 查找最高气温的Reducer类
- */
-public class MaxTemperatureReducer extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
-    public MaxTemperatureReducer() {
-        super();
-    }
-
-    @Override
-    protected void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException {
-        int maxValue = Integer.MIN_VALUE;
-        for (IntWritable value : values){
-            maxValue = Math.max(maxValue, value.get());
-        }
-        context.write(key,new IntWritable(maxValue));
-    }
-}
-</code></pre><p>   同样，reduce函数也有四个形式参数类型用于指定输入和输出类型。reduce函数的输入类型必须匹配map函数<br>   的输出类型：即TEXT类型和IntWritable类型。</p>
-<h4 id="3-mapreduce作业"><a href="#3-MapReduce作业" class="headerlink" title="3. MapReduce作业"></a>3. MapReduce作业</h4><p>   指定一个作业对象，在这个应用中用来在气象数据集中找出最高气温</p>
-<pre><code>package com.hadoopbook.ch02;
-
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-/**
- * @author WangWeiwei
- * @version 1.0
- * @sine 17-2-4
- * MaxTemperature Application to find the maximum temperature in the weather dataset
- */
-public class MaxTemperature {
-    public static void main(String[] args) throws Exception{
-        if (args.length != 2){
-            System.err.println(&quot;Usage: MaxTemperature &lt;input path&gt; &lt;output path&gt;&quot;);
-            System.exit(-1);
-        }
-
-        Job job = new Job();
-        job.setJarByClass(MaxTemperature.class);
-        job.setJobName(&quot;Max Temperature&quot;);
-
-        FileInputFormat.addInputPath(job,new Path(args[0]));
-        FileOutputFormat.setOutputPath(job,new Path(args[1]));
-
-        job.setMapperClass(MaxTemperatureMapper.class);
-        job.setReducerClass(MaxTemperatureReducer.class);
-
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
-</code></pre><p>   Job对象指定作业的执行规范。我们可以使用它来控制整个作业的运行。我们在Hadoop集群上运行这个作业时，<br>   要把它打包成一个JAR文件（Hadoop在集群上发布这个文件）。不必明确指定JAR文件的名称，在Job对象的<br>   setJarByClass方法中传递一个类即可，Hadoop利用这个类来查找包含它的JAR文件，进而找到相关的JAR文件。</p>
-<p>   构造Job对象之后，需要指定输入和输出数据路径。调用FileInputFormat类的静态方法addInputPath()<br>   来定义输入数据的路径，这个路径可以是单个文件/一个目录（此时目录下的所有文件当作输入）或符合特定文件模式的一系列文件。<br>   由函数名可知，可以多次调用addInputPath()方法。</p>
-<p>   调用FIleOutFormat类中的静态方法setOutputPath()来指定输出路径，只能有一个输出路径。这个方法指定的是<br>   reduce函数输出文件的写入目录。在运行作业前该目录是不应该存在的，否则Hadoop会报错，并拒绝运行作业。<br>   这种预防措施的目的是防止数据丢失（长时间运行的作业如果结果被意外覆盖，肯定是非常恼人的）</p>
-<p>   接着通过setMapperClass()和setReducerClass()指定map类型和reduce类型。</p>
-<p>   setOutputKeyClass() 和 setOutputValueClass() 控制map和reduce函数的输出类型。</p>
-<p>   在设置定义map和reduce函数的类后，可以开始运行作业。job中的waitForCompletion()方法返回一个布尔值。</p>
+<p>图1 CAP原理关系图</p>
+<p>在实际的大型网络应用中，数据的规模会快速扩张，因此数据架构的伸缩性（分区耐受性）必不可少。当规模变大之后，机器的数量也会增大，这时网络和服务器故障会更频繁出现，想要保证应用可用，就必须保证分布式处理系统的高可用性。所以在大型网站中，通常会选择强化分布式存储系统的可用性（A）和伸缩性（P），在某种程度上放弃一致性（C）。一般来说，数据不一致的情况通常出现在高并发写操作或者集群状态不稳（故障恢复，集群扩容…）的情况下，应用系统需要对分布式数据处理系统的数据不一致性有一定的了解并进行某种意义上的补偿工作，以避免应用出现数据不正确。  </p>
+<p>CAP原理对于可伸缩的分布式系统设计具有重要的意义，在系统设计开发过程中，不恰当的迎合各种需求，企图打造一个完美的产品，可能会使设计进入两难之地，难以为继。<br>具体来说，数据一致性又可分为以下几点：</p>
+</li>
+<li><strong>数据强一致</strong><br>各个副本中的数据总是强一致的。这种设计正确性很高，但是会在一定程度上损耗性能。</li>
+<li><strong>数据用户一致</strong><br>应用访问数据时通过一定的纠错和校验机制，把多个数据可能不一致的副本的数据综合计算返回一个一致且确定的数据给用户。大型互联网架构一般采用这种设计，性能较好，并且数据不会出现错误。</li>
+<li><p><strong>数据最终一致</strong><br>物理存储的数据不一致，用户访问得到的数据也可能不一致，但经过一段时间的自我修正（通常很短时间），数据会达到最终一致。该设计性能最高，但可能有数据错误。</p>
+<p>因为很难去同时满足CAP，大型网站通常会综合成本、技术、业务场景等条件，结合应用服务和其它的数据监控与纠错功能，使存储系统达到用户一致，保证用户最终访问数据的正确性。</p>
+<blockquote>
+<p>20170804 18:10:00 编辑到多种数据一致性</p>
+</blockquote>
+</li>
+</ul>
 
                     
                         
                     
                     
                         <p>
-                            <a href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/#post-footer" class="postShorten-excerpt_link link">
+                            <a href="/2017/08/03/database/theory/CAP原理/#post-footer" class="postShorten-excerpt_link link">
                                 评论和共享
                             </a>
                         </p>
