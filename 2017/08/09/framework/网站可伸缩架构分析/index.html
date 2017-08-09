@@ -6,21 +6,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="为为技术文档">
-    <title>归档: 2017/8 - 为为技术文档</title>
+    <title>-架构设计-应用可伸缩架构分析 - 为为技术文档</title>
     <meta name="author" content="weiwei02">
     
     
     
-    <meta name="description" content="技术改变世界">
+    <meta name="description" content="引言  网站的伸缩性是指不需要改变服务器的硬件设计，仅仅靠改变应用服务器的部署数量，就可以扩大或缩小服务器的处理能力。一般来说，网站的伸缩性设计可分为两类，一类是根据功能进行物理分离实现伸缩，一类是单一功能通过集群实现伸缩。前者是不同服务器部署不同的服务，提供不同的功能。后者是集群中多台服务器部署相同的服务，提供相同的功能。 方法依据功能实现伸缩  从网站发展早期，通过增加服务器提高网站处理能力时">
+<meta name="keywords" content="framework,theory">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="为为技术文档">
-<meta property="og:url" content="https://weiwei02.github.io/archives/2017/08/index.html">
+<meta property="og:title" content="-架构设计-应用可伸缩架构分析">
+<meta property="og:url" content="https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/index.html">
 <meta property="og:site_name" content="为为技术文档">
-<meta property="og:description" content="技术改变世界">
+<meta property="og:description" content="引言  网站的伸缩性是指不需要改变服务器的硬件设计，仅仅靠改变应用服务器的部署数量，就可以扩大或缩小服务器的处理能力。一般来说，网站的伸缩性设计可分为两类，一类是根据功能进行物理分离实现伸缩，一类是单一功能通过集群实现伸缩。前者是不同服务器部署不同的服务，提供不同的功能。后者是集群中多台服务器部署相同的服务，提供相同的功能。 方法依据功能实现伸缩  从网站发展早期，通过增加服务器提高网站处理能力时">
 <meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/通过物理实现服务器伸缩.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/纵向分离部署实现系统可伸缩性.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/横向分离.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/负载均衡.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/请求重定向.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/DNS域名解析.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/反向代理.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/IP负载均衡.jpg">
+<meta property="og:image" content="https://weiwei02.coding.me/images/framework/flexible/数据链路.jpg">
+<meta property="og:updated_time" content="2017-08-09T07:06:59.324Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="为为技术文档">
-<meta name="twitter:description" content="技术改变世界">
+<meta name="twitter:title" content="-架构设计-应用可伸缩架构分析">
+<meta name="twitter:description" content="引言  网站的伸缩性是指不需要改变服务器的硬件设计，仅仅靠改变应用服务器的部署数量，就可以扩大或缩小服务器的处理能力。一般来说，网站的伸缩性设计可分为两类，一类是根据功能进行物理分离实现伸缩，一类是单一功能通过集群实现伸缩。前者是不同服务器部署不同的服务，提供不同的功能。后者是集群中多台服务器部署相同的服务，提供相同的功能。 方法依据功能实现伸缩  从网站发展早期，通过增加服务器提高网站处理能力时">
+<meta name="twitter:image" content="https://weiwei02.coding.me/images/framework/flexible/通过物理实现服务器伸缩.jpg">
     
     
         
@@ -43,7 +55,7 @@
             <!-- Define author's picture -->
 
 
-<header id="header" data-behavior="1">
+<header id="header" data-behavior="4">
     <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
     <div class="header-title">
         <a class="header-title-link" href="/ ">为为技术文档</a>
@@ -67,7 +79,7 @@
         
     
 
-<nav id="sidebar" data-behavior="1">
+<nav id="sidebar" data-behavior="4">
     <div class="sidebar-container">
         
             <div class="sidebar-profile">
@@ -184,26 +196,61 @@
 </nav>
 
             
-            <div id="main" data-behavior="1"
+            <div id="main" data-behavior="4"
                  class="
                         hasCoverMetaIn
                         ">
                 
-    <section class="postShorten-group main-content-wrap">
+
+
+<div class="post">
+  <style type="text/css">
+.toc-article {
+  display: block;
+  word-break: break-all;
+  background: none repeat scroll 0 0 # eee;
+  /*margin: 2em 0 0 0.5em;*/
+  float: left;
+  width: 20%;
+  /*top: 76px;
+  bottom: 140px;
+  margin-bottom: 0*/
+  overflow-y: auto;
+  position: fixed;
+  overflow-x: hidden;
+  min-height: 1px;
+}
+.toc-article strong {
+margin-top: 40px;
+font-weight: 700;
+padding-left: 2em;
+color: #0e83cd;
+border-top: 1px solid #e3e3e3;
+text-align: center;
+}
+.toc-article a {
+  cursor: pointer;
+  color: #444;
+  text-decoration: none;
+}
+</style>
+
+<aside id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#引言"><span class="post-toc-text">引言</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#方法"><span class="post-toc-text">方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#依据功能实现伸缩"><span class="post-toc-text">依据功能实现伸缩</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#通过集群实现伸缩"><span class="post-toc-text">通过集群实现伸缩</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#应用服务器集群的伸缩性设计"><span class="post-toc-text">应用服务器集群的伸缩性设计</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#http重定向负载均衡"><span class="post-toc-text">HTTP重定向负载均衡</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#dns域名解析负载均衡"><span class="post-toc-text">DNS域名解析负载均衡</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#反向代理负载均衡"><span class="post-toc-text">反向代理负载均衡</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ip负载均衡"><span class="post-toc-text">IP负载均衡</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#数据链路负载均衡"><span class="post-toc-text">数据链路负载均衡</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#负载均衡算法"><span class="post-toc-text">负载均衡算法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#轮询round-robin-rr"><span class="post-toc-text">轮询(Round Robin, RR)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#加权轮询weight-round-robin-wrr"><span class="post-toc-text">加权轮询(Weight Round Robin, WRR)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#随机random"><span class="post-toc-text">随机(Random)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#最少连接least-connections"><span class="post-toc-text">最少连接(Least Connections)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#源地址散列source-hashing"><span class="post-toc-text">源地址散列(Source Hashing)</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li></ol>
+</aside>
+
+<article class="" itemscope itemType="http://schema.org/BlogPosting">
     
     
-    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title" itemprop="headline">
-                    
-                        <a class="link-unstyled" href="/2017/08/09/framework/网站可伸缩架构分析/">
-                            -架构设计-应用可伸缩架构分析
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title" itemprop="headline">
+            -架构设计-应用可伸缩架构分析
+        </h1>
+    
+    
+        <div class="post-meta">
     <time itemprop="datePublished" datetime="2017-08-09T14:51:24+08:00">
 	
 		    8月 09, 2017
@@ -218,10 +265,12 @@
     
 </div>
 
-            </div>
-            
-                <div class="postShorten-content" itemprop="articleBody">
-                    <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  网站的伸缩性是指不需要改变服务器的硬件设计，仅仅靠改变应用服务器的部署数量，就可以扩大或缩小服务器的处理能力。一般来说，网站的伸缩性设计可分为两类，一类是根据功能进行物理分离实现伸缩，一类是单一功能通过集群实现伸缩。前者是不同服务器部署不同的服务，提供不同的功能。后者是集群中多台服务器部署相同的服务，提供相同的功能。</p>
+    
+</div>
+    
+    <div class="post-content markdown" itemprop="articleBody">
+        <div class="main-content-wrap">
+            <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  网站的伸缩性是指不需要改变服务器的硬件设计，仅仅靠改变应用服务器的部署数量，就可以扩大或缩小服务器的处理能力。一般来说，网站的伸缩性设计可分为两类，一类是根据功能进行物理分离实现伸缩，一类是单一功能通过集群实现伸缩。前者是不同服务器部署不同的服务，提供不同的功能。后者是集群中多台服务器部署相同的服务，提供相同的功能。</p>
 <h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1><h2 id="依据功能实现伸缩"><a href="#依据功能实现伸缩" class="headerlink" title="依据功能实现伸缩"></a>依据功能实现伸缩</h2><p>  从网站发展早期，通过增加服务器提高网站处理能力时，新增服务器总是从现有服务器中分离出部分功能和服务。<br>  <img src="https://weiwei02.coding.me/images/framework/flexible/通过物理实现服务器伸缩.jpg" alt="通过物理实现服务器伸缩.jpg"><br>  图1 通过物理实现服务器伸缩</p>
 <p>  图1所描述的伸缩性就是每次伸缩操作都会有更多的服务器加入网站，新增的服务器用于处理特定的服务。依据功能进行进行架构伸缩的具体实现方案有两种，纵向分离和横向分离。</p>
 <ul>
@@ -266,111 +315,82 @@
 <li>《大型网站技术架构·核心原理与案例分析》 李智慧 2013 电子工业出版社</li>
 </ol>
 
-                    
-                        
-                    
-                    
-                        <p>
-                            <a href="/2017/08/09/framework/网站可伸缩架构分析/#post-footer" class="postShorten-excerpt_link link">
-                                评论和共享
-                            </a>
-                        </p>
-                    
-                </div>
             
         </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
         
-    </article>
-    
-    
-    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title" itemprop="headline">
-                    
-                        <a class="link-unstyled" href="/2017/08/03/database/theory/CAP原理/">
-                            -数据库原理-数据CAP原理
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time itemprop="datePublished" datetime="2017-08-03T10:41:00+08:00">
-	
-		    8月 03, 2017
-    	
-    </time>
-    
-        <span>发布在 </span>
-        
-    <a class="category-link" href="/categories/database/">database</a>
-
-
-    
-</div>
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/架构/">framework</a> <a class="tag tag--primary tag--small t-link" href="/tags/原理/">theory</a>
 
             </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/03/database/theory/CAP原理/" data-tooltip="-数据库原理-数据CAP原理">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        
             
-                <div class="postShorten-content" itemprop="articleBody">
-                    <h2 id="高可用的数据"><a href="#高可用的数据" class="headerlink" title="高可用的数据"></a>高可用的数据</h2><p>   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。<br>   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。</p>
-<h2 id="cap"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>   CAP理论是分布式系统中对数据的管理而形成一套理论知识，CAP是设计分布式系统所必须考虑的架构问题。对于CAP本身可以解释如下：</p>
-<ul>
-<li>Consistency(一致性)： 数据一致更新，所有数据变动都是同步的</li>
-<li>Availability(可用性)： 好的响应性能</li>
-<li><p>Partition tolerance(分区耐受性)： 可靠性</p>
-<p>上面的解释可能显得太过抽象，举例来说在高可用的网站架构中，对于数据基础提出了以下的要求：</p>
-</li>
-<li><p><strong>分区耐受性</strong><br>保证数据可持久存储，在各种情况下都不会出现数据丢失的问题。为了实现数据的持久性，不但需要在写入的时候保证数据能够持久存储，还需要能够将数据备份一个或多个副本，存放在不同的物理设备上，防止某个存储设备发生故障时，数据不会丢失。  </p>
-</li>
-<li><strong>数据一致性</strong><br>在数据有多份副本的情况下，如果网络、服务器、软件出现了故障，会导致部分副本写入失败。这就造成了多个副本之间的数据不一致，数据内容冲突。</li>
-<li><p><strong>数据可用性</strong><br>多个副本分别存储于不同的物理设备的情况下，如果某个设备损坏，就需要从另一个数据存储设备上访问数据。如果这个过程不能很快完成，或者在完成的过程中需要停止终端用户访问数据，那么在切换存储设备的这段时间内，数据就是不可访问的。</p>
-<p>CAP原理认为，一个提供数据服务的存储系统无法同时完美的满足一致性（Consistency）、数据可用性（Availability）、分区耐受性（Partition Tolerance）这三个条件。对于三者的关系见图1.</p>
-<p><img src="/images/database/theory/CAP_theory.png" alt=""></p>
-
-<p>图1 CAP原理关系图</p>
-<p>在实际的大型网络应用中，数据的规模会快速扩张，因此数据架构的伸缩性（分区耐受性）必不可少。当规模变大之后，机器的数量也会增大，这时网络和服务器故障会更频繁出现，想要保证应用可用，就必须保证分布式处理系统的高可用性。所以在大型网站中，通常会选择强化分布式存储系统的可用性（A）和伸缩性（P），在某种程度上放弃一致性（C）。一般来说，数据不一致的情况通常出现在高并发写操作或者集群状态不稳（故障恢复，集群扩容…）的情况下，应用系统需要对分布式数据处理系统的数据不一致性有一定的了解并进行某种意义上的补偿工作，以避免应用出现数据不正确。  </p>
-<p>CAP原理对于可伸缩的分布式系统设计具有重要的意义，在系统设计开发过程中，不恰当的迎合各种需求，企图打造一个完美的产品，可能会使设计进入两难之地，难以为继。<br>具体来说，数据一致性又可分为以下几点：</p>
-</li>
-<li><strong>数据强一致</strong><br>各个副本中的数据总是强一致的。这种设计正确性很高，但是会在一定程度上损耗性能。</li>
-<li><strong>数据用户一致</strong><br>应用访问数据时通过一定的纠错和校验机制，把多个数据可能不一致的副本的数据综合计算返回一个一致且确定的数据给用户。大型互联网架构一般采用这种设计，性能较好，并且数据不会出现错误。</li>
-<li><p><strong>数据最终一致</strong><br>物理存储的数据不一致，用户访问得到的数据也可能不一致，但经过一段时间的自我修正（通常很短时间），数据会达到最终一致。该设计性能最高，但可能有数据错误。</p>
-<p>因为很难去同时满足CAP，大型网站通常会综合成本、技术、业务场景等条件，结合应用服务和其它的数据监控与纠错功能，使存储系统达到用户一致，保证用户最终访问数据的正确性。</p>
-<blockquote>
-<p>20170804 18:10:00 编辑到多种数据一致性</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>本文是对class文件的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
-<ol>
-<li>《大型网站技术架构·核心原理与案例分析》 李智慧 2013 电子工业出版社</li>
-</ol>
-
-                    
-                        
-                    
-                    
-                        <p>
-                            <a href="/2017/08/03/database/theory/CAP原理/#post-footer" class="postShorten-excerpt_link link">
-                                评论和共享
-                            </a>
-                        </p>
-                    
-                </div>
             
-        </div>
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/&amp;title=-架构设计-应用可伸缩架构分析">
+                    <i class="fa fa-qq"></i>
+                </a>
+            </li>
         
-    </article>
-    
-    <div class="pagination-bar">
-    <ul class="pagination">
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/">
+                    <i class="fa fa-star"></i>
+                </a>
+            </li>
         
         
-        <li class="pagination-number">第 1 页 共 1 页</li>
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
     </ul>
 </div>
 
-</section>
 
+        
+        
+            
+        
+    </div>
+</article>
+</div>
 
 
                 <footer id="footer" class="main-content-wrap">
@@ -422,6 +442,88 @@ fork me on github logo
 
 
             </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <i class="fa fa-angle-left"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/03/database/theory/CAP原理/" data-tooltip="-数据库原理-数据CAP原理">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions"  href="#btn-open-shareoptions">
+                <i class="fa fa-share-alt"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/&amp;title=-架构设计-应用可伸缩架构分析">
+                    <i class="fa fa-qq"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/">
+                    <i class="fa fa-star"></i>
+                </a>
+            </li>
+        
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#">
+            
+                <i class="fa fa-list"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+    <i id="btn-close-shareoptions" class="fa fa-close"></i>
+    <ul class="share-options">
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/&amp;title=-架构设计-应用可伸缩架构分析">
+                    <i class="fa fa-qq"></i><span>分享到 QQ</span>
+                </a>
+            </li>
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/">
+                    <i class="fa fa-star"></i><span>分享到 Qzone</span>
+                </a>
+            </li>
+        
+    </ul>
+</div>
+
             
         </div>
         
@@ -598,6 +700,8 @@ fork me on github logo
         <!--SCRIPTS-->
 <script src="/assets/js/script-ivwiy10zeb8fifc4swnhkwneuk64y53w2scmdmtp8thi9cqfxh31aowtroaz.min.js"></script>
 <!--SCRIPTS END-->
+
+    
 
 
     </body>
