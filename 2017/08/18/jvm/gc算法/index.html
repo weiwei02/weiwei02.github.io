@@ -6,25 +6,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="为为技术文档">
-    <title>-数据库原理-数据CAP原理 - 为为技术文档</title>
+    <title>JVM虚拟机-垃圾回收算法 - 为为技术文档</title>
     <meta name="author" content="weiwei02">
     
     
     
-    <meta name="description" content="高可用的数据   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。 CAP   CAP理论是分布式系统中对数据的管理">
-<meta name="keywords" content="database,database theory">
+    <meta name="description" content="引言  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空">
+<meta name="keywords" content="java,jvm">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="-数据库原理-数据CAP原理">
-<meta property="og:url" content="https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/index.html">
+<meta property="og:title" content="JVM虚拟机-垃圾回收算法">
+<meta property="og:url" content="https://weiwei02.github.io/2017/08/18/jvm/gc算法/index.html">
 <meta property="og:site_name" content="为为技术文档">
-<meta property="og:description" content="高可用的数据   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。 CAP   CAP理论是分布式系统中对数据的管理">
+<meta property="og:description" content="引言  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="https://weiwei02.github.io/images/database/theory/CAP_theory.png">
-<meta property="og:updated_time" content="2017-08-09T07:07:00.529Z">
+<meta property="og:image" content="https://weiwei02.coding.me/images/java/jvm/垃圾回收标记-清除.png">
+<meta property="og:image" content="https://weiwei02.coding.me/images/java/jvm/垃圾回收复制.png">
+<meta property="og:image" content="https://weiwei02.coding.me/images/java/jvm/垃圾回收标记-整理.png">
+<meta property="og:updated_time" content="2017-08-19T18:20:22.082Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="-数据库原理-数据CAP原理">
-<meta name="twitter:description" content="高可用的数据   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。 CAP   CAP理论是分布式系统中对数据的管理">
-<meta name="twitter:image" content="https://weiwei02.github.io/images/database/theory/CAP_theory.png">
+<meta name="twitter:title" content="JVM虚拟机-垃圾回收算法">
+<meta name="twitter:description" content="引言  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空">
+<meta name="twitter:image" content="https://weiwei02.coding.me/images/java/jvm/垃圾回收标记-清除.png">
     
     
         
@@ -229,7 +231,7 @@ text-align: center;
 
 <aside id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#高可用的数据"><span class="post-toc-text">高可用的数据</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cap"><span class="post-toc-text">CAP</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li></ol>
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#引言"><span class="post-toc-text">引言</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#垃圾回收算法"><span class="post-toc-text">垃圾回收算法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#标记-清除算法mark-sweep"><span class="post-toc-text">标记-清除算法（Mark-Sweep）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#复制算法copying"><span class="post-toc-text">复制算法（Copying）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#标记-整理算法mark-compact"><span class="post-toc-text">标记-整理算法（Mark-Compact）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#分代收集算法generational-collection"><span class="post-toc-text">分代收集算法（Generational Collection）</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#hotspot算法实现"><span class="post-toc-text">HotSpot算法实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#枚举根节点gc-roots"><span class="post-toc-text">枚举根节点（GC Roots）</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#安全点safepoint"><span class="post-toc-text">安全点(Safepoint)</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#安全区safe-region"><span class="post-toc-text">安全区(Safe Region)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关于"><span class="post-toc-text">关于</span></a></li></ol></li></ol>
 </aside>
 
 <article class="" itemscope itemType="http://schema.org/BlogPosting">
@@ -238,20 +240,20 @@ text-align: center;
         <div class="post-header main-content-wrap text-left">
     
         <h1 class="post-title" itemprop="headline">
-            -数据库原理-数据CAP原理
+            JVM虚拟机-垃圾回收算法
         </h1>
     
     
         <div class="post-meta">
-    <time itemprop="datePublished" datetime="2017-08-03T10:41:00+08:00">
+    <time itemprop="datePublished" datetime="2017-08-18T21:22:59+08:00">
 	
-		    8月 03, 2017
+		    8月 18, 2017
     	
     </time>
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/database/">database</a>
+    <a class="category-link" href="/categories/java/">java</a>, <a class="category-link" href="/categories/java/jvm/">jvm</a>
 
 
     
@@ -262,39 +264,62 @@ text-align: center;
     
     <div class="post-content markdown" itemprop="articleBody">
         <div class="main-content-wrap">
-            <h2 id="高可用的数据"><a href="#高可用的数据" class="headerlink" title="高可用的数据"></a>高可用的数据</h2><p>   对于许多应用而言，数据是宝贵的，必须的资产。数据是整个应用的历史，是记录也有可能是配置信息，如果丢失了数据，那么对于某些应用来说结果可能就是毁灭性的，整个应用都有可能因此无法运行。<br>   不同于高可用的应用或服务的设计方式，由于数据存储服务器上存储的数据不同，当某台服务器宕机之后，数据访问请求不能任意的切换到集群中其它数据服务器上。</p>
-<h2 id="cap"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>   CAP理论是分布式系统中对数据的管理而形成一套理论知识，CAP是设计分布式系统所必须考虑的架构问题。对于CAP本身可以解释如下：</p>
-<ul>
-<li>Consistency(一致性)： 数据一致更新，所有数据变动都是同步的</li>
-<li>Availability(可用性)： 好的响应性能</li>
-<li><p>Partition tolerance(分区耐受性)： 可靠性</p>
-<p>上面的解释可能显得太过抽象，举例来说在高可用的网站架构中，对于数据基础提出了以下的要求：</p>
-</li>
-<li><p><strong>分区耐受性</strong><br>保证数据可持久存储，在各种情况下都不会出现数据丢失的问题。为了实现数据的持久性，不但需要在写入的时候保证数据能够持久存储，还需要能够将数据备份一个或多个副本，存放在不同的物理设备上，防止某个存储设备发生故障时，数据不会丢失。  </p>
-</li>
-<li><strong>数据一致性</strong><br>在数据有多份副本的情况下，如果网络、服务器、软件出现了故障，会导致部分副本写入失败。这就造成了多个副本之间的数据不一致，数据内容冲突。</li>
-<li><p><strong>数据可用性</strong><br>多个副本分别存储于不同的物理设备的情况下，如果某个设备损坏，就需要从另一个数据存储设备上访问数据。如果这个过程不能很快完成，或者在完成的过程中需要停止终端用户访问数据，那么在切换存储设备的这段时间内，数据就是不可访问的。</p>
-<p>CAP原理认为，一个提供数据服务的存储系统无法同时完美的满足一致性（Consistency）、数据可用性（Availability）、分区耐受性（Partition Tolerance）这三个条件。对于三者的关系见图1.</p>
-<p><img src="/images/database/theory/CAP_theory.png" alt=""></p>
-
-<p>图1 CAP原理关系图</p>
-<p>在实际的大型网络应用中，数据的规模会快速扩张，因此数据架构的伸缩性（分区耐受性）必不可少。当规模变大之后，机器的数量也会增大，这时网络和服务器故障会更频繁出现，想要保证应用可用，就必须保证分布式处理系统的高可用性。所以在大型网站中，通常会选择强化分布式存储系统的可用性（A）和伸缩性（P），在某种程度上放弃一致性（C）。一般来说，数据不一致的情况通常出现在高并发写操作或者集群状态不稳（故障恢复，集群扩容…）的情况下，应用系统需要对分布式数据处理系统的数据不一致性有一定的了解并进行某种意义上的补偿工作，以避免应用出现数据不正确。  </p>
-<p>CAP原理对于可伸缩的分布式系统设计具有重要的意义，在系统设计开发过程中，不恰当的迎合各种需求，企图打造一个完美的产品，可能会使设计进入两难之地，难以为继。<br>具体来说，数据一致性又可分为以下几点：</p>
-</li>
-<li><strong>数据强一致</strong><br>各个副本中的数据总是强一致的。这种设计正确性很高，但是会在一定程度上损耗性能。</li>
-<li><strong>数据用户一致</strong><br>应用访问数据时通过一定的纠错和校验机制，把多个数据可能不一致的副本的数据综合计算返回一个一致且确定的数据给用户。大型互联网架构一般采用这种设计，性能较好，并且数据不会出现错误。</li>
-<li><p><strong>数据最终一致</strong><br>物理存储的数据不一致，用户访问得到的数据也可能不一致，但经过一段时间的自我修正（通常很短时间），数据会达到最终一致。该设计性能最高，但可能有数据错误。</p>
-<p>因为很难去同时满足CAP，大型网站通常会综合成本、技术、业务场景等条件，结合应用服务和其它的数据监控与纠错功能，使存储系统达到用户一致，保证用户最终访问数据的正确性。</p>
-<blockquote>
-<p>20170804 18:10:00 编辑到多种数据一致性</p>
+            <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空间。需要我们关注的，只有如何完成产品需求，在规定时间内交付合格的产品给客户。如果你对编程的看法跟上面所述的类似，或者你很认同“完成比完美更重要”这条工程师信条，那么这篇文章就不太适合你来阅读了。<br>  内存控制给编程界造成了一个具有魔性的圈，圈内的人想出去，圈外的人想进来。就像C程序员早就受够了内存的申请与释放的折磨，受够了各种内存错误。而很多像你一样的JAVA程序员，立志要写出高性能应用的人，一直在用心地思索怎么才能写出性能更好的多线程应用，当这个追求达到一定层次的时候，你甚至已经开始在乎JAVA垃圾回收所消耗的时间了。由于JAVA自身的限制，我们没办法进入到内存控制的圈内，但我们可以通过设置JVM参数等方式，选择适当的垃圾收集器或设置垃圾回收线程对JAVA的垃圾回收机制进行优化。<br>  本文的重点是介绍JVM虚拟机下常用的垃圾回收算法的理论知识，并不介绍具体算法实现代码。在阅读本文之前，希望读者已经掌握了JVM的内存划分设计、对象引用的可达性分析算法与JAVA的四种对象引用级别（Strong Reference/Soft Reference/Weak Reference/Phantom Reference）等相关知识。</p>
+<h1 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h1><h2 id="标记-清除算法mark-sweep"><a href="#标记-清除算法（Mark-Sweep）" class="headerlink" title="标记-清除算法（Mark-Sweep）"></a>标记-清除算法（Mark-Sweep）</h2><blockquote>
+<p>首先标记出所有需要回收的对象，在标记完成后统一回收所有被标记的对象。</p>
 </blockquote>
+<p>  标记-清除算法的工作过程如图1所示。<br>  <img src="https://weiwei02.coding.me/images/java/jvm/垃圾回收标记-清除.png" alt=""><br>  图1 标记-清除算法示意图  </p>
+<ul>
+<li>优点： 算法简单清晰，其它垃圾收集算法都是据此算法的思想并对其不足改进而得到的。  </li>
+<li>缺点： 1.效率低，标记和清除需要遍历内存，效率极低。2.回收内存之后产生大量的内存碎片，当内存碎片过多时，应用需要给大对象分配内存时无法分配连续内存。</li>
+</ul>
+<h2 id="复制算法copying"><a href="#复制算法（Copying）" class="headerlink" title="复制算法（Copying）"></a>复制算法（Copying）</h2><blockquote>
+<p>将内存按容量划分为完全等大小的两块，每次只使用其中一块内存。当这一块内存用完后，将还活着的对象全部复制到另一块上面，然后把这一块上已使用的内存空间全部清理掉。其示意图如图二所示。  </p>
+</blockquote>
+<p>  <img src="https://weiwei02.coding.me/images/java/jvm/垃圾回收复制.png" alt=""><br>  图2 复制算法示意图</p>
+<ul>
+<li>优点： 实现简单，运行高效。每次都是对整个半区进行内存回收，内存分配时无需考虑内存碎片等复杂情况。  </li>
+<li><p>缺点： 浪费内存空间。在最坏的情况下，这种垃圾回收算法可能浪费了一半的内存空间。  </p>
+<p>在JAVA应用中，90%之上的对象的生存时间都极短，所以JVM把内存分为一块较大的Eden空间和两块较小的Survivor空间，每次只使用Eden和其中一块Survior空间。当需要进行垃圾回收时，将Eden和Survivor中还处于可达状态的对象一次性的复制到另一块Survivor空间中，最后清空Eden和刚刚使用的Survivor空间。当Survivor空间不够用时，还会将长时间存活的对象转存的老年代中。在HotSpot虚拟机中，默认的Eden和Survivor空间的比例是8:1，这样可以做到只浪费10%的内存。  </p>
 </li>
 </ul>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>本文是对class文件的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
+<h2 id="标记-整理算法mark-compact"><a href="#标记-整理算法（Mark-Compact）" class="headerlink" title="标记-整理算法（Mark-Compact）"></a>标记-整理算法（Mark-Compact）</h2><blockquote>
+<p>标记-整理算法的标记过程与标记-清除算法的标记过程类似，但在标记完成后并不是直接对可回收的对象进行清理，而是让所有正在存活的对象都向前端移动，然后直接清理掉边界以外的内存。其示意图见图3.  </p>
+</blockquote>
+<p>  <img src="https://weiwei02.coding.me/images/java/jvm/垃圾回收标记-整理.png" alt=""><br>  图3 标记-整理算法示意图  </p>
+<ul>
+<li>优点： 节省内存空间，提升内存运用率，且不会产生内存碎片。  </li>
+<li>缺点： 性能低。  </li>
+</ul>
+<h2 id="分代收集算法generational-collection"><a href="#分代收集算法（Generational-Collection）" class="headerlink" title="分代收集算法（Generational Collection）"></a>分代收集算法（Generational Collection）</h2><blockquote>
+<p>根据对象的存活时间把内存分为新生代和老年代，根据个代对象的存活特点，每个代采用不同的垃圾回收算法。  </p>
+</blockquote>
+<p>  分代收集就是根据不同代的特性，使用最合适的垃圾回收算法进行垃圾回收。如新生代中，每次垃圾收集都会有大量的对象死去，只有极小部分对象存活，所以更适合复制算法。老年代中对象存活率高，且没有额外的内存空间为它进行分配担保，所以更适合用标记-清除或标记-整理算法。</p>
+<h1 id="hotspot算法实现"><a href="#HotSpot算法实现" class="headerlink" title="HotSpot算法实现"></a>HotSpot算法实现</h1><h2 id="枚举根节点gc-roots"><a href="#枚举根节点（GC-Roots）" class="headerlink" title="枚举根节点（GC Roots）"></a>枚举根节点（GC Roots）</h2><p>  在垃圾回收时，我们要想办法找出哪些对象是存活的，一般会选取一些被称为GC Root的对象,从这些对象开始枚举。在进行GC Root枚举时要求所有对象停下来，也就是JVM所称的“Stop the world”。所有的算法实现都会将虚拟机停下来的，否则分析结果的准确性将无法保证。<br>  由于HotSpot采用准确式GC，该技术主要功能就是让虚拟机可以准确的知道内存中某个位置的数据类型是什么，比如某个内存位置到底是一个整型的变量，还是对某个对象的 reference。这样在进行 GC Roots 枚举时，只需要枚举 reference 类型的即可。在能够准确地确定 Java 堆和方法区等 reference 准确位置之后，HotSpot 就能极大地缩短 GC Roots 枚举时间，所以当执行系统停顿下来之后，虚拟机不需要遍历所有的根节点和上下文去确定GC Roots，而是存在着一个OopMap的数据结构来达到这个目的。<br>  在类加载完成的时候，虚拟机就会把什么类的什么偏移上是什么类型的数据计算出来。在JIT编译的时候也会在特定位置记下在寄存器和栈中哪些位置是引用，GC在扫描时就可直接得到信息。</p>
+<h2 id="安全点safepoint"><a href="#安全点-Safepoint" class="headerlink" title="安全点(Safepoint)"></a>安全点(Safepoint)</h2><p>  Safepoint：会导致 OopMap 内容变化的指令非常多，如果为每一条指令都生成对应的 OopMap，那么将需要大量的额外空间，这样对导致 GC 成本很高，所以 HotSpot 只在 “特定位置” 记录这些信息，这些位置被称为 安全点(Safepoint)。并非程序在任意时刻都可以停顿下来进行 GC，而只有程序到达 安全点(Safepoint) 以后才可以停顿下来进行 GC；所以安全点既不能太少，以至于 GC 过程等待程序到达安全点的时间过长，也不能太多，以至于 GC 过程带来的成本过高。</p>
+<p>  由于在 GC 过程中必须保证程序已执行，那么也就是说 必须等待所有线程都到达安全点上方可进行 GC。一般来说有两种解决方案可以选择：</p>
+<ul>
+<li><p>抢先式中断：不需要线程的执行代码去主动配合，当发生 GC 时，先强制中断所有线程，然后如果发现某些线程未处于安全点，那么将其唤醒，直至其到达安全点再次将其中断；这样一直等待所有线程都在安全点后开始 GC。现在几乎没有虚拟机使用这种方式。  </p>
+</li>
+<li><p>主动式中断：不强制中断线程，只是简单地设置一个中断标记，各个线程在执行时轮询这个标记，一旦发现标记被改变(出现中断标记)时，那么将运行到安全点后自己中断挂起；目前所有商用虚拟机全部采用主动式中断。</p>
+</li>
+</ul>
+<h1 id="安全区safe-region"><a href="#安全区-Safe-Region" class="headerlink" title="安全区(Safe Region)"></a>安全区(Safe Region)</h1><p>  安全点机制仅仅是保证了程序执行时不需要太长时间就可以进入一个安全点进行 GC 动作，但是当特殊情况时，比如线程休眠、线程阻塞等状态的情况下，显然 JVM 不可能一直等待被阻塞或休眠的线程正常唤醒执行，此时就引入了安全区的概念。<br>  安全区(Safe Region)：安全区域是指在一段代码区域内，对象引用关系等不会发生变化，在此区域内任意位置开始 GC 都是安全的。线程运行到Safe Region中的代码时，首先标记自己进入了安全区，然后在这段区域内，如果线程发生了阻塞、休眠等操作，JVM 发起 GC 时将忽略这些处于安全区的线程。当线程再次被唤醒时，首先他会检查是否完成了 GC Roots枚举(或这个GC过程)，然后选择是否继续执行，否则将继续等待 GC 的完成。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>  本文是对class文件的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
 <ol>
-<li>《大型网站技术架构·核心原理与案例分析》 李智慧 2013 电子工业出版社</li>
+<li>《The Java® Virtual Machine Specification · Java SE 8 Edition》</li>
+<li>《深入理解Java虚拟机：JVM高级特性与最佳实践/周志明著.——2版.——北京：机械工业出版社，2013.6》</li>
+<li><p>《Java Platform, Standard Edition HotSpot Virtual Machine Garbage Collection Tuning Guide》</p>
+<p>非原创声明</p>
+<blockquote>
+<p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
+</blockquote>
+</li>
 </ol>
-
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><pre><code>本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到 weiwei02@vip.qq.com  
+我的[github](https://github.com/weiwei02/): https://github.com/weiwei02/  
+我相信技术能够改变世界。
+</code></pre>
             
         </div>
     </div>
@@ -303,7 +328,7 @@ text-align: center;
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">标签</span><br/>
                 
-    <a class="tag tag--primary tag--small t-link" href="/tags/database/">database</a> <a class="tag tag--primary tag--small t-link" href="/tags/database-theory/">database theory</a>
+    <a class="tag tag--primary tag--small t-link" href="/tags/java/">java</a> <a class="tag tag--primary tag--small t-link" href="/tags/java虚拟机/">jvm</a>
 
             </div>
         
@@ -313,7 +338,7 @@ text-align: center;
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/09/framework/网站可伸缩架构分析/"  data-tooltip="-架构设计-应用可伸缩架构分析">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -321,7 +346,7 @@ text-align: center;
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/07/21/jvm/class文件说明/" data-tooltip="class文件介绍">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/09/framework/网站可伸缩架构分析/" data-tooltip="-架构设计-应用可伸缩架构分析">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -339,7 +364,7 @@ text-align: center;
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/&amp;title=-数据库原理-数据CAP原理">
+                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/&amp;title=JVM虚拟机-垃圾回收算法">
                     <i class="fa fa-qq"></i>
                 </a>
             </li>
@@ -347,7 +372,7 @@ text-align: center;
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/">
+                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/">
                     <i class="fa fa-star"></i>
                 </a>
             </li>
@@ -429,7 +454,7 @@ fork me on github logo
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/09/framework/网站可伸缩架构分析/"  data-tooltip="-架构设计-应用可伸缩架构分析">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -437,7 +462,7 @@ fork me on github logo
             </li>
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/07/21/jvm/class文件说明/" data-tooltip="class文件介绍">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/08/09/framework/网站可伸缩架构分析/" data-tooltip="-架构设计-应用可伸缩架构分析">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
                     <i class="fa fa-angle-right"></i>
@@ -455,7 +480,7 @@ fork me on github logo
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/&amp;title=-数据库原理-数据CAP原理">
+                <a class="post-action-btn btn btn--default" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/&amp;title=JVM虚拟机-垃圾回收算法">
                     <i class="fa fa-qq"></i>
                 </a>
             </li>
@@ -463,7 +488,7 @@ fork me on github logo
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/">
+                <a class="post-action-btn btn btn--default" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/">
                     <i class="fa fa-star"></i>
                 </a>
             </li>
@@ -488,7 +513,7 @@ fork me on github logo
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/&amp;title=-数据库原理-数据CAP原理">
+                <a class="share-option-btn" target="new" href="http://connect.qq.com/widget/shareqq/index.html?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/&amp;title=JVM虚拟机-垃圾回收算法">
                     <i class="fa fa-qq"></i><span>分享到 QQ</span>
                 </a>
             </li>
@@ -496,7 +521,7 @@ fork me on github logo
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/">
+                <a class="share-option-btn" target="new" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://weiwei02.github.io/2017/08/18/jvm/gc算法/">
                     <i class="fa fa-star"></i><span>分享到 Qzone</span>
                 </a>
             </li>
