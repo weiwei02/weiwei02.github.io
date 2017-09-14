@@ -221,7 +221,9 @@
             </div>
             
                 <div class="postShorten-content" itemprop="articleBody">
-                    <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空间。需要我们关注的，只有如何完成产品需求，在规定时间内交付合格的产品给客户。如果你对编程的看法跟上面所述的类似，或者你很认同“完成比完美更重要”这条工程师信条，那么这篇文章就不太适合你来阅读了。<br>  内存控制给编程界造成了一个具有魔性的圈，圈内的人想出去，圈外的人想进来。就像C程序员早就受够了内存的申请与释放的折磨，受够了各种内存错误。而很多像你一样的JAVA程序员，立志要写出高性能应用的人，一直在用心地思索怎么才能写出性能更好的多线程应用，当这个追求达到一定层次的时候，你甚至已经开始在乎JAVA垃圾回收所消耗的时间了。由于JAVA自身的限制，我们没办法进入到内存控制的圈内，但我们可以通过设置JVM参数等方式，选择适当的垃圾收集器或设置垃圾回收线程对JAVA的垃圾回收机制进行优化。<br>  本文的重点是介绍JVM虚拟机下常用的垃圾回收算法的理论知识，并不介绍具体算法实现代码。在阅读本文之前，希望读者已经掌握了JVM的内存划分设计、对象引用的可达性分析算法与JAVA的四种对象引用级别（Strong Reference/Soft Reference/Weak Reference/Phantom Reference）等相关知识。</p>
+                    <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  C和C++ 程序员能够直接操作内存，凭自己的需要来决定何时去申请多大内存，何时去释放这块内存。他们甚至可以使用指针，来确定的去操作某块内存地址。作为后来者的JAVA远远不如他们强大，我认识的JAVA程序员可能有半数都从未去关注过内存。在使用JAVA进行业务开发时，我们不需要去关注对象到底存储在内存的哪个位置，也不需要关注这个对象到底占用了多大的内存空间，更不需要特意的为某个对象去释放内存空间。需要我们关注的，只有如何完成产品需求，在规定时间内交付合格的产品给客户。如果你对编程的看法跟上面所述的类似，或者你很认同“完成比完美更重要”这条工程师信条，那么这篇文章就不太适合你来阅读了。  </p>
+<p>  内存控制给编程界造成了一个具有魔性的圈，圈内的人想出去，圈外的人想进来。就像C程序员早就受够了内存的申请与释放的折磨，受够了各种内存错误。而很多像你一样的JAVA程序员，立志要写出高性能应用的人，一直在用心地思索怎么才能写出性能更好的多线程应用，当这个追求达到一定层次的时候，你甚至已经开始在乎JAVA垃圾回收所消耗的时间了。由于JAVA自身的限制，我们没办法进入到内存控制的圈内，但我们可以通过设置JVM参数等方式，选择适当的垃圾收集器或设置垃圾回收线程对JAVA的垃圾回收机制进行优化。  </p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>  本文的重点是介绍JVM虚拟机下常用的垃圾回收算法的理论知识，并不介绍具体算法实现代码。在阅读本文之前，希望读者已经掌握了JVM的内存划分设计、对象引用的可达性分析算法与JAVA的四种对象引用级别（Strong Reference/Soft Reference/Weak Reference/Phantom Reference）等相关知识。在本文之后，我还会再去整理一些关于垃圾收集器等方面的知识。文中所涉及的代码或理论都已在JDK8中进行验证。</p>
 <h1 id="垃圾回收算法"><a href="#垃圾回收算法" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h1><h2 id="标记-清除算法mark-sweep"><a href="#标记-清除算法（Mark-Sweep）" class="headerlink" title="标记-清除算法（Mark-Sweep）"></a>标记-清除算法（Mark-Sweep）</h2><blockquote>
 <p>首先标记出所有需要回收的对象，在标记完成后统一回收所有被标记的对象。</p>
 </blockquote>
@@ -252,7 +254,9 @@
 <p>根据对象的存活时间把内存分为新生代和老年代，根据个代对象的存活特点，每个代采用不同的垃圾回收算法。  </p>
 </blockquote>
 <p>  分代收集就是根据不同代的特性，使用最合适的垃圾回收算法进行垃圾回收。如新生代中，每次垃圾收集都会有大量的对象死去，只有极小部分对象存活，所以更适合复制算法。老年代中对象存活率高，且没有额外的内存空间为它进行分配担保，所以更适合用标记-清除或标记-整理算法。</p>
-<h1 id="hotspot算法实现"><a href="#HotSpot算法实现" class="headerlink" title="HotSpot算法实现"></a>HotSpot算法实现</h1><h2 id="枚举根节点gc-roots"><a href="#枚举根节点（GC-Roots）" class="headerlink" title="枚举根节点（GC Roots）"></a>枚举根节点（GC Roots）</h2><p>  在垃圾回收时，我们要想办法找出哪些对象是存活的，一般会选取一些被称为GC Root的对象,从这些对象开始枚举。在进行GC Root枚举时要求所有对象停下来，也就是JVM所称的“Stop the world”。所有的算法实现都会将虚拟机停下来的，否则分析结果的准确性将无法保证。<br>  由于HotSpot采用准确式GC，该技术主要功能就是让虚拟机可以准确的知道内存中某个位置的数据类型是什么，比如某个内存位置到底是一个整型的变量，还是对某个对象的 reference。这样在进行 GC Roots 枚举时，只需要枚举 reference 类型的即可。在能够准确地确定 Java 堆和方法区等 reference 准确位置之后，HotSpot 就能极大地缩短 GC Roots 枚举时间，所以当执行系统停顿下来之后，虚拟机不需要遍历所有的根节点和上下文去确定GC Roots，而是存在着一个OopMap的数据结构来达到这个目的。<br>  在类加载完成的时候，虚拟机就会把什么类的什么偏移上是什么类型的数据计算出来。在JIT编译的时候也会在特定位置记下在寄存器和栈中哪些位置是引用，GC在扫描时就可直接得到信息。</p>
+<h1 id="hotspot算法实现"><a href="#HotSpot算法实现" class="headerlink" title="HotSpot算法实现"></a>HotSpot算法实现</h1><h2 id="枚举根节点gc-roots"><a href="#枚举根节点（GC-Roots）" class="headerlink" title="枚举根节点（GC Roots）"></a>枚举根节点（GC Roots）</h2><p>  在垃圾回收时，我们要想办法找出哪些对象是存活的，一般会选取一些被称为GC Root的对象,从这些对象开始枚举。在进行GC Root枚举时要求所有对象停下来，也就是JVM所称的“Stop the world”。所有的算法实现都会将虚拟机停下来的，否则分析结果的准确性将无法保证。  </p>
+<p>  由于HotSpot采用准确式GC，该技术主要功能就是让虚拟机可以准确的知道内存中某个位置的数据类型是什么，比如某个内存位置到底是一个整型的变量，还是对某个对象的 reference。这样在进行 GC Roots 枚举时，只需要枚举 reference 类型的即可。在能够准确地确定 Java 堆和方法区等 reference 准确位置之后，HotSpot 就能极大地缩短 GC Roots 枚举时间，所以当执行系统停顿下来之后，虚拟机不需要遍历所有的根节点和上下文去确定GC Roots，而是存在着一个OopMap的数据结构来达到这个目的。  </p>
+<p>  在类加载完成的时候，虚拟机就会把什么类的什么偏移上是什么类型的数据计算出来。在JIT编译的时候也会在特定位置记下在寄存器和栈中哪些位置是引用，GC在扫描时就可直接得到信息。</p>
 <h2 id="安全点safepoint"><a href="#安全点-Safepoint" class="headerlink" title="安全点(Safepoint)"></a>安全点(Safepoint)</h2><p>  Safepoint：会导致 OopMap 内容变化的指令非常多，如果为每一条指令都生成对应的 OopMap，那么将需要大量的额外空间，这样对导致 GC 成本很高，所以 HotSpot 只在 “特定位置” 记录这些信息，这些位置被称为 安全点(Safepoint)。并非程序在任意时刻都可以停顿下来进行 GC，而只有程序到达 安全点(Safepoint) 以后才可以停顿下来进行 GC；所以安全点既不能太少，以至于 GC 过程等待程序到达安全点的时间过长，也不能太多，以至于 GC 过程带来的成本过高。</p>
 <p>  由于在 GC 过程中必须保证程序已执行，那么也就是说 必须等待所有线程都到达安全点上方可进行 GC。一般来说有两种解决方案可以选择：</p>
 <ul>
@@ -261,8 +265,9 @@
 <li><p>主动式中断：不强制中断线程，只是简单地设置一个中断标记，各个线程在执行时轮询这个标记，一旦发现标记被改变(出现中断标记)时，那么将运行到安全点后自己中断挂起；目前所有商用虚拟机全部采用主动式中断。</p>
 </li>
 </ul>
-<h1 id="安全区safe-region"><a href="#安全区-Safe-Region" class="headerlink" title="安全区(Safe Region)"></a>安全区(Safe Region)</h1><p>  安全点机制仅仅是保证了程序执行时不需要太长时间就可以进入一个安全点进行 GC 动作，但是当特殊情况时，比如线程休眠、线程阻塞等状态的情况下，显然 JVM 不可能一直等待被阻塞或休眠的线程正常唤醒执行，此时就引入了安全区的概念。<br>  安全区(Safe Region)：安全区域是指在一段代码区域内，对象引用关系等不会发生变化，在此区域内任意位置开始 GC 都是安全的。线程运行到Safe Region中的代码时，首先标记自己进入了安全区，然后在这段区域内，如果线程发生了阻塞、休眠等操作，JVM 发起 GC 时将忽略这些处于安全区的线程。当线程再次被唤醒时，首先他会检查是否完成了 GC Roots枚举(或这个GC过程)，然后选择是否继续执行，否则将继续等待 GC 的完成。</p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>  本文是对class文件的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
+<h1 id="安全区safe-region"><a href="#安全区-Safe-Region" class="headerlink" title="安全区(Safe Region)"></a>安全区(Safe Region)</h1><p>  安全点机制仅仅是保证了程序执行时不需要太长时间就可以进入一个安全点进行 GC 动作，但是当特殊情况时，比如线程休眠、线程阻塞等状态的情况下，显然 JVM 不可能一直等待被阻塞或休眠的线程正常唤醒执行，此时就引入了安全区的概念。  </p>
+<p>  安全区(Safe Region)：安全区域是指在一段代码区域内，对象引用关系等不会发生变化，在此区域内任意位置开始 GC 都是安全的。线程运行到Safe Region中的代码时，首先标记自己进入了安全区，然后在这段区域内，如果线程发生了阻塞、休眠等操作，JVM 发起 GC 时将忽略这些处于安全区的线程。当线程再次被唤醒时，首先他会检查是否完成了 GC Roots枚举(或这个GC过程)，然后选择是否继续执行，否则将继续等待 GC 的完成。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>  本文是对JVM垃圾收集算法的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
 <ol>
 <li>《The Java® Virtual Machine Specification · Java SE 8 Edition》</li>
 <li>《深入理解Java虚拟机：JVM高级特性与最佳实践/周志明著.——2版.——北京：机械工业出版社，2013.6》</li>
@@ -273,10 +278,8 @@
 </blockquote>
 </li>
 </ol>
-<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><pre><code>本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到 weiwei02@vip.qq.com  
-我的[github](https://github.com/weiwei02/): https://github.com/weiwei02/  
-我相信技术能够改变世界。
-</code></pre>
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到 weiwei02@vip.qq.com<br>  我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>: <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a><br>  我相信技术能够改变世界。</p>
+
                     
                         
                     
@@ -1444,6 +1447,82 @@ fork me on github logo
                     <hr>
                 </div>
                 
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/20/jvm/垃圾收集器/">
+                            <h3 class="media-heading">JVM虚拟机-垃圾收集器</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月20日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/21/sentiment/life/程序员-注重实效的哲学/">
+                            <h3 class="media-heading">编程与人生的韵味-注重实效的哲学</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月21日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/25/jdk/map源码分析/">
+                            <h3 class="media-heading">源码分析-jdk8源码-Map接口源码分析</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月25日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/09/14/sentiment/life/程序员-有效的表达自己/">
+                            <h3 class="media-heading">编程与人生的韵味-有效的表达自己</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年9月14日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
             </div>
         </div>
         <div class="modal-footer">
@@ -1451,7 +1530,7 @@ fork me on github logo
                 data-message-zero="没有找到文章"
                 data-message-one="找到 1 篇文章"
                 data-message-other="找到 {n} 篇文章">
-                找到 6 篇文章
+                找到 10 篇文章
             </p>
         </div>
     </div>

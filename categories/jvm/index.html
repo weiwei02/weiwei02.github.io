@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn,en,default">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="为为技术文档">
+    <title>分类: jvm - 为为技术文档</title>
+    <meta name="author" content="weiwei02">
+    
+    
+    
+    <meta name="description" content="技术改变世界">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="为为技术文档">
+<meta property="og:url" content="https://weiwei02.github.io/categories/jvm/index.html">
+<meta property="og:site_name" content="为为技术文档">
+<meta property="og:description" content="技术改变世界">
+<meta property="og:locale" content="zh-cn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为为技术文档">
+<meta name="twitter:description" content="技术改变世界">
+    
+    
+        
+    
+    
+        <meta property="og:image" content="https://weiwei02.github.io/assets/images/weiwei.jpg"/>
+    
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style-sxklfps8ywgfyyjcowvnb4gxdgt0zjts3hsguljmv9uqanxjbnitrovtbrek.min.css">
+    <!--STYLES END-->
+    
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+<header id="header" data-behavior="1">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a class="header-title-link" href="/ ">为为技术文档</a>
+    </div>
+    
+        
+            <a  class="header-right-icon 技术，改变世界"
+                href="#about">
+        
+        
+            <i class="fa fa-lg fa-wewei.jpg"></i>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+
+        
+    
+
+<nav id="sidebar" data-behavior="1">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+                </a>
+                <h4 class="sidebar-profile-name">weiwei02</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>技术，改变世界</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/ "
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-categories"
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+                        <span class="sidebar-button-desc">分类</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-tags"
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-archives"
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link open-algolia-search"
+                             href="#search"
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="#about"
+                            
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/weiwei02" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="mailto:weiwei02@vip.qq.com" target="_blank" rel="noopener">
+                    
+                        <i class="sidebar-button-icon fa fa-lg fa-envelope-o"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="1"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+    <section class="postShorten-group main-content-wrap">
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title" itemprop="headline">
+                    
+                        <a class="link-unstyled" href="/2017/08/20/jvm/垃圾收集器/">
+                            JVM虚拟机-垃圾收集器
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time itemprop="datePublished" datetime="2017-08-20T16:30:22+08:00">
+	
+		    8月 20, 2017
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/jvm/">jvm</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-content" itemprop="articleBody">
+                    <h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>  垃圾收集器（GC,Garbage Collector)：自动化的内存管理工具，垃圾收集器主要做以下几种工作：  </p>
+<ul>
+<li>在新生代中给新对象分配内存，并将老对象放到老年代中去管理。(Allocating objects to a young generation and promoting aged objects into an old generation.)  </li>
+<li>Java HotSpot VM在Java堆内存占用率超过默认阈值时触发标记阶段，标记阶段将通过并行标记的方式在老年代中寻找存活的对象。(Finding live objects in the old generation through a concurrent (parallel) marking phase. The Java HotSpot VM triggers the marking phase when the total Java heap occupancy exceeds the default threshold.)  </li>
+<li><p>通过并行复制的算法压缩存活的对象从而恢复可用内存。(Recovering free memory by compacting live objects through parallel copying.)    </p>
+<p>如何选择垃圾收集器才能使应用的性能达到最优？HotSpot团队都难以对这个问题给出完美的答案。一般而言，暂停应用程序进行垃圾回收的频率越低且每次垃圾回收的时间越短，应用程序的性能就会越高。但是拥有许多大数据对象的多线程高事务率的大型应用的垃圾回收很难同时满足以上两点。</p>
+<p>阿姆达定理（系统中对某一部件采用更快执行方式所能获得的系统性能改进程度，取决于这种执行方式被使用的频率，或所占总执行时间的比例。）说明，给定问题的并行加速度由问题的顺序执行部分限制其性能。其意为者部分工作并不能完美的并行化，只能串行的执行。在JAVA平台也受此定理的影响，JAVA SE 1.4之前并不支持并行垃圾回收，故垃圾收集器在多处理器下对性能的影响随程序的并行化而增长。</p>
+</li>
+</ul>
+<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>  小至简单的 <code>public static void main</code> 程序，大至拥有数百台服务器集群的大型WEB服务，全世界目前有几十亿部设备正在使用JAVA。为了支持这种多样化的部署，Java HotSpot虚拟机（Java HotSpot VM）提供了多个垃圾收集器，每个垃圾回收器被设计为满足不同的需求。JAVA应用程序可以根据自身运行的类型（调试版或生产版）与载体物理机的配置情况，自动的去选择合适的垃圾收集器。但当需求上需要我们写出更加高性能的应用程序时，JAVA的默认配置就很难再满足我们的需求。此时便需要作为开发或运维人员的你通过设置一些JVM参数，明确的指定垃圾收集器等方式，来达到性能需求上所指明的条件。</p>
+<p>  在阅读本文之前，我希望你已经读过我的上篇文章<a href="">JVM虚拟机-垃圾回收算法</a>，对常见的垃圾回收算法及其在HotSpot虚拟机下的实现有了解，如果说垃圾回收算法是理论基础，那么本文所介绍的垃圾收集器就是JVM垃圾收集的具体实现。另外希望你在工作或研究的过程中感受过JAVA默认的垃圾回收机制给你带来过性能上的压力，因为只有亲身的经历过，才能感受到了解垃圾收集器的机制的重要性。</p>
+<p>  本文会以JAVA8版本的HotSpot虚拟机为基础环境逐个的介绍每个垃圾收集器的实现原理并分析其优缺点，简略的探讨一下什么样的应用在什么样的环境下应该选用哪种垃圾收集器。本文的目标是能够帮助读者对应用程序进行JVM调优，做出高性能的应用。</p>
+<p>  本文着重对CMS和G1两款垃圾收集器进行介绍分析。</p>
+<h1 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h1><p>  HotSpot虚拟机提供了三种大类的垃圾收集器，每种垃圾收集器都有不同的特征和性能表现。简单描述如下：</p>
+<ul>
+<li><p>串行类垃圾收集器（ serial collector）：<br>串行类垃圾收集器是最受争议的垃圾收集器，串行垃圾收集器使用单个线程完成所有的垃圾收集工作。其工作时不需要与其它的线程进行交互，所以垃圾回收的效率是很高的。串行类垃圾收集器尤其适合单CPU的硬件平台上使用，且在使用数据集小于100MB的多CPU硬件平台上也能取得很好的效果。HotSpot在Client模式下默认使用串行垃圾收集器，在其它环境下也可以通过使用 <code>-XX:+UseSerialGC</code> 参数来明确指定使用串行垃圾收集器。</p>
+</li>
+<li><p>并行垃圾收集器（Parallel Collector）:<br>并行垃圾收集器又被称为吞吐量优先垃圾收集器(Throughput Collector)，通常我们所指的吞吐量优先垃圾收集器指的都是适用于新生代的 Parallel Scavenge  垃圾收集器。并行垃圾收集器能够显著的减少多CPU环境下中型或大型应用垃圾收集所消耗的时间，HotSpot Server版本默认使用的使用的垃圾收集器就是并行垃圾收集器。通过启动虚拟机的时候指定参数 <code>-XX:+UseParallelGC</code> 可以手动指定年轻代使用吞吐量优先收集器。与年轻代相呼应的还有老年代并行垃圾收集器（Oracle 称其为 Parallel compaction 意为并行压缩），当使用参数 <code>-XX:+UseParallelGC</code> 时，JVM老年代的默认开启 Parallel compaction ，同时也可以通过参数 <code>-XX:-UseParallelOldGC</code> 来手动开启。  </p>
+<ul>
+<li>并发垃圾收集器（Concurrent Collector）：<br>从字面上理解，并发垃圾收集器的意思是让用户线程和垃圾回收线程并发运行。其在大中型应用系统中并发垃圾收集器工作的过程中仅仅有很短的 ‘Stop the world’ ，且相对于并行垃圾收集器能够大幅度的减小系统响应时间（可能以牺牲系统吞吐量为代价）。JAVA8版本的HotSpot虚拟机下目前有两款并发收集器，CMS垃圾收集器（通过参数 <code>XX:+UseConcMarkSweepGC</code> 开启）和G1（通过参数 <code>-XX:+UseG1GC</code> 开启）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="探索"><a href="#探索" class="headerlink" title="探索"></a>探索</h2><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>  本文是对JVM垃圾收集器的学习笔记，笔记的内容并非是原创，而是大量参考其它资料。在写作本文的过程中引用了以下资料，为为在此深深谢过以下资料的作者。</p>
+<ol>
+<li>《The Java® Virtual Machine Specification · Java SE 8 Edition》</li>
+<li>《深入理解Java虚拟机：JVM高级特性与最佳实践/周志明著.——2版.——北京：机械工业出版社，2013.6》</li>
+<li><p>《Java Platform,Standard Edition HotSpot Virtual Machine Garbage Collection Tuning Guide》</p>
+<p>非原创声明</p>
+<blockquote>
+<p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
+
+                    
+                        
+                    
+                    
+                        <p>
+                            <a href="/2017/08/20/jvm/垃圾收集器/#post-footer" class="postShorten-excerpt_link link">
+                                评论和共享
+                            </a>
+                        </p>
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    <div class="pagination-bar">
+    <ul class="pagination">
+        
+        
+        <li class="pagination-number">第 1 页 共 1 页</li>
+    </ul>
+</div>
+
+</section>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2017 weiwei02. All Rights Reserved.
+        github空间地址： https://weiwei02.github.io/
+        国内空间地址：   https://weiwei02.cording.me/
+    </span>
+</footer>
+<div class="ribbon">
+<a href="https://github.com/weiwei02">Fork me on GitHub</a>
+</div>
+<style type="text/css">
+/**
+fork me on github logo
+*/
+.ribbon {
+  background-color: #a00;
+  overflow: hidden;
+  white-space: nowrap;
+  /* top left corner */
+  position: fixed;
+  right: -50px;
+  top: 40px;
+  /* 45 deg ccw rotation */
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  /* shadow */
+  -webkit-box-shadow: 0 0 10px #888;
+     -moz-box-shadow: 0 0 10px #888;
+          box-shadow: 0 0 10px #888;
+}
+.ribbon a {
+  border: 1px solid #faa;
+  color: #fff;
+  display: block;
+  font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 1px 0;
+  padding: 10px 50px;
+  text-align: center;
+  text-decoration: none;
+  /* shadow */
+  text-shadow: 0 0 5px #444;
+}
+</style>
+
+
+            </div>
+            
+        </div>
+        
+
+
+    
+        
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-remove"></i>
+        </div>
+        
+            <img id="about-card-picture" src="/assets/images/weiwei.jpg" alt="作者的图片"/>
+        
+            <h4 id="about-card-name">weiwei02</h4>
+        
+            <div id="about-card-bio"><p>技术，改变世界</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>软件工程师</p>
+
+            </div>
+        
+        
+            <div id="about-card-location">
+                <i class="fa fa-map-marker"></i>
+                <br/>
+                北京，海淀
+            </div>
+        
+        <div>
+          <a href="https://weiwei02.github.io/" target="_blank">国外主站</a>
+          <a href="https://weiwei02.cording.me/" target="_blank">国内主站</a>
+        </div>
+    </div>
+</div>
+
+        <div id="algolia-search-modal" class="modal-container">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="close-button"><i class="fa fa-close"></i></span>
+            <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+                <span class="searchby-algolia-text text-color-light text-small">by</span>
+                <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+            </a>
+            <i class="search-icon fa fa-search"></i>
+            <form id="algolia-search-form">
+                <input type="text" id="algolia-search-input" name="search"
+                    class="form-control input--large search-input" placeholder="Search "
+                    />
+            </form>
+        </div>
+        <div class="modal-body">
+            <div class="no-result text-color-light text-center">没有找到文章</div>
+            <div class="results">
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
+                            <h3 class="media-heading">MapReduce并行计算框架介绍</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年2月4日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/07/02/jvm/001-java内存模型/">
+                            <h3 class="media-heading">java内存模型</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年7月2日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/07/21/jvm/class文件说明/">
+                            <h3 class="media-heading">class文件介绍</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年7月21日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/03/database/theory/CAP原理/">
+                            <h3 class="media-heading">-数据库原理-数据CAP原理</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月3日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/09/framework/网站可伸缩架构分析/">
+                            <h3 class="media-heading">-架构设计-应用可伸缩架构分析</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月9日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/18/jvm/gc算法/">
+                            <h3 class="media-heading">JVM虚拟机-垃圾回收算法</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月18日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/20/jvm/垃圾收集器/">
+                            <h3 class="media-heading">JVM虚拟机-垃圾收集器</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月20日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/21/sentiment/life/程序员-注重实效的哲学/">
+                            <h3 class="media-heading">编程与人生的韵味-注重实效的哲学</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月21日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/08/25/jdk/map源码分析/">
+                            <h3 class="media-heading">源码分析-jdk8源码-Map接口源码分析</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年8月25日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+                <div class="media">
+                    
+                    <div class="media-body">
+                        <a class="link-unstyled" href="https://weiwei02.github.io/2017/09/14/sentiment/life/程序员-有效的表达自己/">
+                            <h3 class="media-heading">编程与人生的韵味-有效的表达自己</h3>
+                        </a>
+                        <span class="media-meta">
+                            <span class="media-date text-small">
+                                
+                                    2017年9月14日
+                                
+                            </span>
+                        </span>
+                        <div class="media-content hide-xs font-merryweather"></div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    <hr>
+                </div>
+                
+            </div>
+        </div>
+        <div class="modal-footer">
+            <p class="results-count text-medium"
+                data-message-zero="没有找到文章"
+                data-message-one="找到 1 篇文章"
+                data-message-other="找到 {n} 篇文章">
+                找到 10 篇文章
+            </p>
+        </div>
+    </div>
+</div>
+
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/script-ivwiy10zeb8fifc4swnhkwneuk64y53w2scmdmtp8thi9cqfxh31aowtroaz.min.js"></script>
+<!--SCRIPTS END-->
+
+
+    </body>
+</html>
