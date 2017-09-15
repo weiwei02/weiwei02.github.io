@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="为为技术文档">
-    <title>分类: source - 为为技术文档</title>
+    <title>标签: ELK - 为为技术文档</title>
     <meta name="author" content="weiwei02">
     
     
@@ -14,7 +14,7 @@
     <meta name="description" content="技术改变世界">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="为为技术文档">
-<meta property="og:url" content="https://weiwei02.github.io/categories/source/index.html">
+<meta property="og:url" content="https://weiwei02.github.io/tags/ELK/index.html">
 <meta property="og:site_name" content="为为技术文档">
 <meta property="og:description" content="技术改变世界">
 <meta property="og:locale" content="zh-cn">
@@ -198,21 +198,21 @@
             <div class="postShorten-header">
                 <h1 class="postShorten-title" itemprop="headline">
                     
-                        <a class="link-unstyled" href="/2017/08/25/jdk/map源码分析/">
-                            源码分析-jdk8源码-Map接口源码分析
+                        <a class="link-unstyled" href="/2017/09/16/database/elasticsearch/[ElasticSearch ]1初步使用/">
+                            -Elasticsearch-1初步使用
                         </a>
                     
                 </h1>
                 <div class="postShorten-meta">
-    <time itemprop="datePublished" datetime="2017-08-25T20:40:22+08:00">
+    <time itemprop="datePublished" datetime="2017-09-16T03:25:00+08:00">
 	
-		    8月 25, 2017
+		    9月 16, 2017
     	
     </time>
     
         <span>发布在 </span>
         
-    <a class="category-link" href="/categories/source/">source</a>
+    <a class="category-link" href="/categories/java/">java</a>
 
 
     
@@ -221,435 +221,175 @@
             </div>
             
                 <div class="postShorten-content" itemprop="articleBody">
-                    <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>  工欲善其事，必先利其器。作为JAVA的开发者，如果说会使用jdk是工作的基础，那么了解jdk的实现原理，甚至自己写一些框架或包就是工作的进阶。尤记得听一名老工程师跟我说过，等你把jdk都研究透了，你就是一名合格的高级工程师。Map集合在JAVA开发中很重要，就常用程度来讲，其在现代业务开发的代码里出现的频率位居前列。今天这篇文章主旨就是探索Map及其常见的实现类。<br>  本文着重从jdk8代码出发来分析Map，与之响应的会讨论部分数据结构和算法方面的知识。我希望读者你已经有了很好的java基础，能够了解常用的设计模式并对面向对象编程思想拥有深刻的理解。本文会忽略部分过于基础的内容和不在本文讨论范围内的部分API。<br>  首先，文章会简要的介绍Map接口，接着去分析jdk中几个最常见的Map接口的实现类。文章会花些笔墨在HashMap这个最常见的Map类上，其次会去分析TreeMap等类。最后文章还会对比HashMap来研究适合在并发场景下使用的ConcurrentHashMap，来分析它究竟是如何优化才能保证HashMap的线程安全性的。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="基本接口"><a href="#基本接口" class="headerlink" title="基本接口"></a>基本接口</h3><p>  Map是一种键-值对应的数据结构，<code>java.util.Map</code> 接口定义了Map常用的api。接下来我以代码的形式简要的对Map接口进行介绍。</p>
-<pre><code>package java.util;
+                    <h1 id="elastic-search初步使用"><a href="#elastic-search初步使用" class="headerlink" title="elastic search初步使用"></a>elastic search初步使用</h1><p>   ElasticSearch是一个基于Lucene的搜索引擎，是当前世界上最受欢迎的全文搜索引擎，其主要特点如下：</p>
+<ul>
+<li>横向可拓展性： 往集群中增加机器时只需要更改一点配置就可以将新机器加入集群</li>
+<li>分片机制： 同一个索引切分成不同的分片</li>
+<li>高可用： 提供复制集机制，一个分片可以设置多个复制集，某台机器如果宕机不至于使集群无法工作</li>
+<li>使用简单，基于 REST api就可以完成搜索引擎的全部工作，所需学习成本低。</li>
+</ul>
+<blockquote>
+<p>如无特殊声明，本文和后续文档将 Elastic Search 简称为ES</p>
+</blockquote>
+<h2 id="全文搜索"><a href="#全文搜索" class="headerlink" title="全文搜索"></a>全文搜索</h2><p>   全文搜索是指搜索程序扫描整个文档，通过一定的分词方法，对每一个词建立索引，并指明该词在文档中出现的位置和次数，最后搜索引擎再通过索引关键字搜索出文档并返回给用户的过程。</p>
+<h4 id="lucene"><a href="#Lucene" class="headerlink" title="Lucene"></a>Lucene</h4><p>   Lucene是Apache下的一个开源全文搜索引擎工具，提供了完整的查询引擎和索引引擎和部分文本分析引擎。不过Lucene仅仅是一个工具包，其目的是为了让研发人员能够通过这些工具包快速的为自己的应用搭建一个搜索引擎或者基于这些工具包开发出一个完整的搜索引擎。</p>
+<h4 id="倒排序索引"><a href="#倒排序索引" class="headerlink" title="倒排序索引"></a>倒排序索引</h4><p>   Lucene中的索引采用的是倒排序索引的模式。所谓的倒排序索引(Inverted Index)是通过属性的值来确定整条纪录的位置，而不是由纪录来确定属性的值。倒排索引把普通索引中的文档编号和值的关系倒过来，变成：“关键词”对“拥有该关键词的所有文章号”。带有倒排索引的文件我们称为倒排索引文件，简称倒排文件(inverted file)。倒排索引主要就由索引关键字和倒排文件所组成。</p>
+<p>   建立搜索引擎的关键步骤就在于建立倒排索引，倒排索引一般以以下数据结构出现：</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>文章号[出现频率]</th>
+<th>出现位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>简单</td>
+<td>1[3]</td>
+<td>2,9,89</td>
+</tr>
+<tr>
+<td>美女</td>
+<td>5[1]</td>
+<td>1</td>
+</tr>
+<tr>
+<td>tip</td>
+<td>9[2]</td>
+<td>2,7,22</td>
+</tr>
+</tbody>
+</table>
+<p>表1 倒排索引数据结构示例</p>
+<p>倒排索引在存储上使用LSM树，维护其索引方法是当需要新增文档进入系统时，首先解析文档，之后更新内存中维护的临时索引，文档中出现的每个单词，在其倒排表列表末尾追加倒排表列表项；一旦临时索引将指定内存消耗光，即进行一次索引合并，这里需要倒排文件里的倒排列表存放顺序已经按照索引单词字典顺序由低到高排序，这样直接顺序扫描合并即可。</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>   lucene在实现倒排索引时将索引划分为词典文件(Term Dictionary)、频率文件(Frequencies)、位置文件(Positions)保存。其中词典文件不仅包含关键词，还有该关键词指向频率文件和位置文件的指针。</p>
+<p>   为了节省存储空间，提升索引效率。Lucene还对索引进行了压缩。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>   ES使用JAVA语言开发，所以在安装ES之前需要在系统中安装有JDK。</p>
+<p>   表2是本文中的示例所使用的软件环境信息。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>ubuntu server</td>
+<td>16.04.2 LTS</td>
+</tr>
+<tr>
+<td>内核</td>
+<td>Kernel</td>
+<td>4.4.0-62-generic</td>
+</tr>
+<tr>
+<td>容器</td>
+<td>docker</td>
+<td>1.28</td>
+</tr>
+<tr>
+<td>java</td>
+<td>openjdk</td>
+<td>1.8.0_141</td>
+</tr>
+<tr>
+<td>搜索引擎</td>
+<td>elasticsearch</td>
+<td>5.5.2</td>
+</tr>
+</tbody>
+</table>
+<p>表2 本机软件环境信息</p>
+<h4 id="docker镜像安装"><a href="#docker镜像安装" class="headerlink" title="docker镜像安装"></a>docker镜像安装</h4><p>   为了方便部署，我直接采用docker镜像的方式搭建ES。镜像启用命令为：</p>
+<pre><code>$ docker run -d -v &quot;$PWD/esdata&quot;:/usr/share/elasticsearch/data --name elasticsearch -H elasticsearch elasticsearch  -Etransport.host=0.0.0.0 -Ediscovery.zen.minimum_master_nodes=1 elasticsearch
+</code></pre><h4 id="系统内核参数"><a href="#系统内核参数" class="headerlink" title="系统内核参数"></a>系统内核参数</h4><p>   由于elastic search需要用到nio和mmap(虚拟内存映射)技术，在启动该镜像之前首先需要检查一下系统内核对虚拟内存映射数目的限制(vm.max_map_count参数)是否大于262144，如果不满足这个条件，elastic search镜像将不会启动。</p>
+<p>   我们可以通过以下两种方式去设置系统内核的vm.max_map_count参数：</p>
+<pre><code>sysctl -w vm.max_map_count=262144
+</code></pre><p>   如果想永久修改此参数，可以通过修改 <code>/etc/sysctl.conf</code> 文件的方式使其永久性的成为系统内核参数。</p>
+<h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><p>   在linux系统下，我们可以使用 <code>curl</code> 程序来完成REST接口的调用与测试，《Elasticsearch权威指南》对 <code>curl</code> 调用REST接口的方式描述如图1所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/1.png-github" alt="image"><br>   图一 curl命令示意图</p>
+<p>   使用以下命令可以检测elastic search是否启动成功。</p>
+<pre><code>curl -i -XGET &apos;localhost:9200/&apos;
+</code></pre><p>   <code>-i</code> 参数是说明要打印http请求头信息，<code>GET</code>是请求方法，<code>localhost:9200/</code>就是我们服务器的地址和端口，elastic search默认与外部交互的端口就是9200.如果服务启动成功，你会收到类似虾苗的响应信息。</p>
+<pre><code>HTTP/1.1 200 OK
+content-type: application/json; charset=UTF-8
+content-length: 331
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.io.Serializable;
-
-/**
- * 返回map中键值对集合的数目
- */
-int size();
-
-/**
- * 判断map中是否有键值对信息，如果该Map为空则返回 true 。
- */
-boolean isEmpty();
-
-/**
- 判断map中是否有指定的key元素，如果有该元素，则返回 true 。
- */
-boolean containsKey(Object key);
-
-/**
- 如果map中有一个或多个key所映射的值为value，则返回 true 。
- */
-boolean containsValue(Object value);
-
-/**
- 根据指定的key在map中获取与之对应的value并返回。
- */
-V get(Object key);
-
-/**
- 将key/value对放入到map中，如果map中已经存在了键为key的元素，则将原来的值替换为新value。
- */
-V put(K key, V value);
-
-/**
- 从map中移除键为key的元素并返回
- */
-V remove(Object key);
-
-
-/**
-将目标集合中的所有元素全部放到该map中
- */
-void putAll(Map&lt;? extends K, ? extends V&gt; m);
-
-/**
- 清空集合中的所有元素
- */
-void clear();
-
-
-/**
- 返回map中所有key的集合
- 该方法所返回的集合并非创建一个全新集合，如果对该集合进行删除操作会直接影响到原来map中的元素
- */
-Set&lt;K&gt; keySet();
-
-/**
- 返回map中所有value的集合
- 该方法所返回的集合也与map有对应关系，对map本身所做的删除操作会进而影响到此集合
- */
-Collection&lt;V&gt; values();
-
-/**
- 返回map中的元素集合
- 该元素集合与map还存在映射关系
- */
-Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySet();
-
-/**
- * map元素接口
- 将map元素封装成键-值对的格式
- */
-interface Entry&lt;K,V&gt; {
-  ...//Entry中的内容暂不介绍
+{
+  &quot;name&quot; : &quot;Franz Kafka&quot;,
+  &quot;cluster_name&quot; : &quot;elasticsearch&quot;,
+  &quot;cluster_uuid&quot; : &quot;JP677C9kRNqjEWYnFae_gQ&quot;,
+  &quot;version&quot; : {
+    &quot;number&quot; : &quot;5.5.2&quot;,
+    &quot;build_hash&quot; : &quot;b2f0c09&quot;,
+    &quot;build_date&quot; : &quot;2017-08-14T12:33:14.154Z&quot;,
+    &quot;build_snapshot&quot; : false,
+    &quot;lucene_version&quot; : &quot;6.6.0&quot;
+  },
+  &quot;tagline&quot; : &quot;You Know, for Search&quot;
 }
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>   为了方便操作，本文与后续内容都将使用chrome浏览器的 Restlet Client插件来模拟REST请求，在这里推荐一下，感谢该插件的作者将本插件开源。</p>
+<h4 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h4><p>   Elastic Search就像是一个nosql数据库一样，存储我们要进行查询的信息，在ES中，数据库名就是索引名。一个 Elastic Search 集群可以包含多个索引，相应的每个索引可以包含多个类型 。这些不同的类型存储着多个文档 ，每个文档又有多个属性。</p>
+<p>   我们可以使用PUT方法创建blogs库，详细请求信息如图2所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/2.png-github" alt="image"><br>   图二 创建blogs数据库</p>
+<p>   如果收到以下回应内容，则说明blogs数据库创建成功。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/3.png-github" alt="image"><br>   图3 创建blogs数据库成功的回应信息</p>
+<p>   使用GET地址 <a href="http://ubuntu:9200/_cat/indices?v可以查看库的状态，返回结果如下：" target="_blank" rel="external">http://ubuntu:9200/_cat/indices?v可以查看库的状态，返回结果如下：</a></p>
+<pre><code>health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   blogs Y9hkRePSQmiAzjNQ_K_FSw   5   1          0            0       810b           810b
+</code></pre><p>   其中yellow代表健康度，状态是活动，索引为blogs，主分片数量5，复制集1，已存储的文档数为0.</p>
+<h3 id="新建文档"><a href="#新建文档" class="headerlink" title="新建文档"></a>新建文档</h3><p>   ES是一个面向文档的数据库，每一个文档都代表一条完整的实体记录，本文实例中一个文档就代表一篇文章。存储一个文档到ES的行为就叫做索引，在索引一个文档之前，首先应该明确应该将文档存储在哪里。</p>
+<p>   本文对于数据存储使用以下设计：</p>
+<ul>
+<li>每一篇文章被定义为一个文档，包含作者，发布时间，文章分类，正文等信息。</li>
+<li>每个文档都属于articles类型</li>
+<li>articles类型保存在blogs索引里</li>
+<li><p>blogs索引在我们的ES集群中。</p>
+<p>按照这个设计思路，我们向ES中索引一篇文章，其请求信息图4所示。</p>
+</li>
+</ul>
+<p><img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/4.png-github" alt="image"><br>   图4 向blogs索引articles类型插入一篇新文档</p>
+<p>   如果新建文档成功，则会收到HTTP状态码为201的回应，回应信息如图5所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/5.png-github" alt="image"><br>   图5 向blogs索引articles类型插入一篇新文档回应信息</p>
+<p>   接着我们再索引几篇新文档，如图6，图7.<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/6.png-github" alt="image"><br>   图6 向blogs索引articles类型插入更多新文档<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/7.png-github" alt="image"><br>   图7 向blogs索引articles类型插入更多新文档。</p>
+<p>   如果你无法手动对文档进行编号，可以使用POST方法向ES中索引一个新文档，其操作方法和链接规则如图8所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/9.png-github" alt="image"><br>   图8 向blogs索引articles类型POST插入一篇新文档</p>
+<p>   从其相应结果中可以看出ES通过自己的规则为文档增加了_id字段，相应结果如图9所示.<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/10.png-github" alt="image"><br>   图9 向blogs索引articles类型POST插入一篇新文档响应信息</p>
+<h4 id="检索文档"><a href="#检索文档" class="headerlink" title="检索文档"></a>检索文档</h4><p>   在ES中检索已存在的文档只需使用GET方法访问刚刚新增文档时的连接就可以了。</p>
+<pre><code>GET http://ubuntu:9200/blogs/articles/2
+</code></pre><p>   返回结果如图10所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/8.png-github" alt="image"><br>   图10 从blogs索引articles类型检索文档</p>
+<p>   _index属性代表文档所属索引， _type是文档所属类型， _id是文档编号, _version是文档的版本（每对文档做一次修改， _version就会加1）， _found代表是否查询到指定文档， _source就是文档中所存储的内容。</p>
+<h4 id="更新与删除文档"><a href="#更新与删除文档" class="headerlink" title="更新与删除文档"></a>更新与删除文档</h4><p>   使用REST API对ES中的数据进行修改或删除也是极其方便的。如果我们要删除某个文档，只需使用DELETE方法访问这个文档的链接就可以了。</p>
+<pre><code>DELETE http://ubuntu:9200/blogs/articles/2
+</code></pre><p>   我们先介绍一种全量更新文档的方法，使用PUT方法访问我们的文档地址，参数信息加上文档的新内容就可以全量更新文档了。文档更新后，ES会犯规给我们新的文档版本和操作结果。</p>
+<p>   示例，对文档2进行全量更新，其请求与回应信息如图11，图12所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/11.png-github" alt="image"><br>   图11 PUT文档全量更新<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/12.png-github" alt="image"><br>   图12 PUT文档全量更新响应</p>
+<p>   ES的文档不能被修改，只能被替换。但ES为我们提供了 update API。通过update API操作从整体来看，我们可以对文档的某个位置进行部分更新。不过在底层实现上 update API 还是需要进行完整的检索-修改-重建索引 的处理过程。 区别在于这个过程发生在分片内部，这样就避免了多次请求的网络开销。因为减少了检索和重建索引步骤之间的时间，更新此文档时与其他进程的更新操作冲突的可能性也会减少。<br>   update 请求最简单的一种形式将待更新的字段作为doc的参数， 它只是与现有的文档进行合并。对象被合并到一起，覆盖现有的字段或者新增字段。</p>
+<p>   示例，修改文档2的author和tags属性，其请求、新文档内容如图13、图14所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/13.png-github" alt="image"><br>   图13 POST update文档部分更新<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/14.png-github" alt="image"><br>   图14 POST update文档部分更新后的结果</p>
+<p>   如果更新文档是一个并发操作，当前工作在更新文档的检索步骤会获取当前版本号，在重建索引之前会检查文档此时的版本号是否与检索时的版本号一致，如果版本号不一致，当前线程就会发生操作失败，放弃文档的修改。如果业务上允许重复更新的话，可以通过retry_on_conflict属性，来设置失败重试。该属性用法如下面代码所示。对于不能重试的业务场景，update API提供了version属性进行乐观并发控制。</p>
+<pre><code>PUT http://ubuntu:9200/blogs/articles/2/_update?retry_on_conflict=5
+</code></pre><h4 id="搜索文档"><a href="#搜索文档" class="headerlink" title="搜索文档"></a>搜索文档</h4><p>   搜索是ES的核心，不过鉴于篇幅原因，关于搜索功能的使用将放到下篇文章中。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p> 本文是我在学习使用ES时的笔记，在本文的写过过程中参考了大量其它资料，有些材料来源于网络，我由衷的表示感谢，但由于原作者不明，恕不能一一记述。</p>
+<ol>
+<li>Elasticsearch 权威指南.——<a href="https://www.elastic.co/" target="_blank" rel="external">https://www.elastic.co/</a></li>
+<li><p>Elasticsearch技术解析与实战/朱林编著.——北京：机械工业出版社，2016.12(数据分析与决策技术丛书)</p>
+<p>非原创声明</p>
+<blockquote>
+<p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
 
-boolean equals(Object o);
-
-int hashCode();
-
-// Defaultable methods
-
-/**
- 返回指定的key所对应的value或默认值
- * @since 1.8
- */
-default V getOrDefault(Object key, V defaultValue) {
-    V v;
-    return (((v = get(key)) != null) || containsKey(key))
-        ? v
-        : defaultValue;
-}
-
-/**
- 对map集合进行遍历操作
- * @since 1.8
- */
-default void forEach(BiConsumer&lt;? super K, ? super V&gt; action) {
-    Objects.requireNonNull(action);
-    for (Map.Entry&lt;K, V&gt; entry : entrySet()) {
-        K k;
-        V v;
-        try {
-            k = entry.getKey();
-            v = entry.getValue();
-        } catch(IllegalStateException ise) {
-            // this usually means the entry is no longer in the map.
-            throw new ConcurrentModificationException(ise);
-        }
-        action.accept(k, v);
-    }
-}
-
-/**
- 将符合条件的map中的元素进行替换
- * @since 1.8
- */
-default void replaceAll(BiFunction&lt;? super K, ? super V, ? extends V&gt; function) {
-    Objects.requireNonNull(function);
-    for (Map.Entry&lt;K, V&gt; entry : entrySet()) {
-        K k;
-        V v;
-        try {
-            k = entry.getKey();
-            v = entry.getValue();
-        } catch(IllegalStateException ise) {
-            // this usually means the entry is no longer in the map.
-            throw new ConcurrentModificationException(ise);
-        }
-
-        // ise thrown from function is not a cme.
-        v = function.apply(k, v);
-
-        try {
-            entry.setValue(v);
-        } catch(IllegalStateException ise) {
-            // this usually means the entry is no longer in the map.
-            throw new ConcurrentModificationException(ise);
-        }
-    }
-}
-
-/**
- 如果map中没有指定的key，或指定的key对应的value值为null，则将key-value中的value放入到map中，并返回新value。如果map中已经存在该key，且value不是null，则返回原值。
- * @since 1.8
- */
-default V putIfAbsent(K key, V value) {
-    V v = get(key);
-    if (v == null) {
-        v = put(key, value);
-    }
-
-    return v;
-}
-
-/**
-以同时指定键值对的方式来从map中移除元素，返回操作成功状态
- * @since 1.8
- */
-default boolean remove(Object key, Object value) {
-    Object curValue = get(key);
-    if (!Objects.equals(curValue, value) ||
-        (curValue == null &amp;&amp; !containsKey(key))) {
-        return false;
-    }
-    remove(key);
-    return true;
-}
-
-/**
- 如果原元素存在，则将原元素的值替换为新值
- * @since 1.8
- */
-default boolean replace(K key, V oldValue, V newValue) {
-    Object curValue = get(key);
-    if (!Objects.equals(curValue, oldValue) ||
-        (curValue == null &amp;&amp; !containsKey(key))) {
-        return false;
-    }
-    put(key, newValue);
-    return true;
-}
-
-/**
- 当前的key在map中有对应的映射时，使用新元素替换原有元素
- * @since 1.8
- */
-default V replace(K key, V value) {
-    V curValue;
-    if (((curValue = get(key)) != null) || containsKey(key)) {
-        curValue = put(key, value);
-    }
-    return curValue;
-}
-
-/**
- 如果指定的key在map中的映射为空（或者map中不包含此key），则尝试使用给定的算法去计算一个值作为key的映射，并将这个元素存放进map中。
- * @since 1.8
- */
-default V computeIfAbsent(K key,
-        Function&lt;? super K, ? extends V&gt; mappingFunction) {
-    Objects.requireNonNull(mappingFunction);
-    V v;
-    if ((v = get(key)) == null) {
-        V newValue;
-        if ((newValue = mappingFunction.apply(key)) != null) {
-            put(key, newValue);
-            return newValue;
-        }
-    }
-
-    return v;
-}
-
-/**
- 如果map中已有指定的key和其映射，则尝试使用给定的函数重新计算一个value替换原值
- * @since 1.8
- */
-default V computeIfPresent(K key,
-        BiFunction&lt;? super K, ? super V, ? extends V&gt; remappingFunction) {
-    Objects.requireNonNull(remappingFunction);
-    V oldValue;
-    if ((oldValue = get(key)) != null) {
-        V newValue = remappingFunction.apply(key, oldValue);
-        if (newValue != null) {
-            put(key, newValue);
-            return newValue;
-        } else {
-            remove(key);
-            return null;
-        }
-    } else {
-        return null;
-    }
-}
-
-/**
- 使用给定的函数计算一个在map中与key对应的新值用来替换掉原来与key映射的value
- * @since 1.8
- */
-default V compute(K key,
-        BiFunction&lt;? super K, ? super V, ? extends V&gt; remappingFunction) {
-    Objects.requireNonNull(remappingFunction);
-    V oldValue = get(key);
-
-    V newValue = remappingFunction.apply(key, oldValue);
-    if (newValue == null) {
-        // delete mapping
-        if (oldValue != null || containsKey(key)) {
-            // something to remove
-            remove(key);
-            return null;
-        } else {
-            // nothing to do. Leave things as they were.
-            return null;
-        }
-    } else {
-        // add or replace old mapping
-        put(key, newValue);
-        return newValue;
-    }
-}
-
-/**
- 如果在map中与key所对应的value为null，则使用新value去替换原来的值，否则就使用remappingFunction在原值和新值之间计算出一个值用来做key的映射。
- * @since 1.8
- */
-default V merge(K key, V value,
-        BiFunction&lt;? super V, ? super V, ? extends V&gt; remappingFunction) {
-    Objects.requireNonNull(remappingFunction);
-    Objects.requireNonNull(value);
-    V oldValue = get(key);
-    V newValue = (oldValue == null) ? value :
-               remappingFunction.apply(oldValue, value);
-    if(newValue == null) {
-        remove(key);
-    } else {
-        put(key, newValue);
-    }
-    return newValue;
-}
-}
-
-/*
-
-*/
-</code></pre><p> 我们看到，jdk8对map类进行了大量的改动，增加了很多带有默认方法的api，其中包括如foreach等实用的api。</p>
-<h3 id="map骨架"><a href="#Map骨架" class="headerlink" title="Map骨架"></a>Map骨架</h3><p>  <code>java.util.AbstractMap</code> 类是一个抽象类，其对map接口提供了最简单的模版方法实现，如求map的entrySet()，hashCode()等方法。我们常用的类HashMap就是继承自此类，不过由于此类实现的时间较早（jdk1.2），当前大部分继承自此类的的类激斗都对此类的方法进行了更符合性能的优化重写。</p>
-<h3 id="哈希表-hashtable"><a href="#哈希表-（HashTable）" class="headerlink" title="哈希表 （HashTable）"></a>哈希表 （HashTable）</h3><p>  <code>java.util.HashTable</code>是数据结构中的哈希表的java实现，其内部存储key-value形式的键值对元素，任何不是null的对象都可以被当做key或value。为了能够正常的检索、存储对象，所有的key都应该有可用的hashCode()方法。哈希表的性能主要由初始化大小和负载因数两个重要的要素所影响，HashTable基于大量数据进行测验与分析，综合考虑存储时的空间兼用与检索时的时间消耗情况比，将负载因数的初始值设置为 0.75f ，如无必要情况，无需修改此值。对于初始化大小这个参数，其默认值为11，我们可以根据实际业务任意进行定制。HashTable是线程安全的，但是在实际开发使用中在没有线程安全的场景下java官方推荐我们直接使用<code>HashTable</code>，在高并发的场景下，我们更应该优先考虑使用<code>java.util.concurrent.ConcurrentHashMap</code>类。</p>
-<pre><code>public class Hashtable&lt;K,V&gt;
-  extends Dictionary&lt;K,V&gt;
-  implements Map&lt;K,V&gt;, Cloneable, java.io.Serializable {
-
-  /** 哈希表数据实际存放在Entry数组中 */
-  private transient Entry&lt;?,?&gt;[] table;
-
-  /** 哈希表中entry的数量 */
-  private transient int count;
-
-  /* 重新进行hash计算的阈值 */
-  private int threshold;
-
-  /** 哈希表的负载因数 */
-  private float loadFactor;
-
-  /**
-   哈希表已修改数据结构的次数
-   增加或减少Entry节点的数目或对哈希表进行扩容都会触发该值的变化，modCount主要用来在高并发场景下进行快速失败使用。
-   */
-  private transient int modCount = 0;
-
-  /** 序列化版本id */
-  private static final long serialVersionUID = 1421746759512286392L;
-
-
-}
-/**
-while(i.hasBext()){
-  Entry e = i.next();
-  if(value == e.getValue || value.equals(e.getValue))
-    return true;
-  }
-  return false;
-  ****/
-</code></pre><p>  哈希表的基本属性中有一个 threshold 属性，这个属性代表着重新分配哈希空间的阈值，当哈希表中存放的数据超出此值所标识的大小，哈希表就会进行自动扩容并重新计算 threshold 值，其计算公式为 <code>threshold = (int)(capacity * loadFactor)</code>。</p>
-<p>  首先我们分析一下用来检查是否包含某元素的contains()方法：</p>
-<pre><code>public synchronized boolean contains(Object value) {
-      if (value == null) {
-          throw new NullPointerException();
-      }
-
-      Entry&lt;?,?&gt; tab[] = table;
-      for (int i = tab.length ; i-- &gt; 0 ;) {
-          for (Entry&lt;?,?&gt; e = tab[i] ; e != null ; e = e.next) {
-              if (e.value.equals(value)) {
-                  return true;
-              }
-          }
-      }
-      return false;
-  }
-  public synchronized V get(Object key) {
-      Entry&lt;?,?&gt; tab[] = table;
-      int hash = key.hashCode();
-      int index = (hash &amp; 0x7FFFFFFF) % tab.length;
-      for (Entry&lt;?,?&gt; e = tab[index] ; e != null ; e = e.next) {
-          if ((e.hash == hash) &amp;&amp; e.key.equals(key)) {
-              return (V)e.value;
-          }
-      }
-      return null;
-  }
-
-  /** 为哈希表添加节点 ****/
-
-  private void addEntry(int hash, K key, V value, int index) {
-      modCount++;
-
-      Entry&lt;?,?&gt; tab[] = table;
-      if (count &gt;= threshold) {
-          // Rehash the table if the threshold is exceeded
-          rehash();
-
-          tab = table;
-          hash = key.hashCode();
-          index = (hash &amp; 0x7FFFFFFF) % tab.length;
-      }
-
-      // Creates the new entry.
-      @SuppressWarnings(&quot;unchecked&quot;)
-      Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;) tab[index];
-      tab[index] = new Entry&lt;&gt;(hash, key, value, e);
-      count++;
-  }
-
-  /** 向哈希表中存放某值 */
-  public synchronized V put(K key, V value) {
-      // Make sure the value is not null
-      if (value == null) {
-          throw new NullPointerException();
-      }
-
-      // 确认哈希表中不存在该key
-      Entry&lt;?,?&gt; tab[] = table;
-      int hash = key.hashCode();
-      int index = (hash &amp; 0x7FFFFFFF) % tab.length;
-      @SuppressWarnings(&quot;unchecked&quot;)
-      Entry&lt;K,V&gt; entry = (Entry&lt;K,V&gt;)tab[index];
-      for(; entry != null ; entry = entry.next) {
-          if ((entry.hash == hash) &amp;&amp; entry.key.equals(key)) {
-              V old = entry.value;
-              entry.value = value;
-              return old;
-          }
-      }
-
-      addEntry(hash, key, value, index);
-      return null;
-  }
-  /** 向哈希表中添加节点 ****/
-  public synchronized void clear() {
-      Entry&lt;?,?&gt; tab[] = table;
-      modCount++;
-      for (int index = tab.length; --index &gt;= 0; )
-          tab[index] = null;
-      count = 0;
-  }
-
-  public Set&lt;K&gt; keySet() {
-      if (keySet == null)
-          keySet = Collections.synchronizedSet(new KeySet(), this);
-      return keySet;
-  }
-</code></pre><p>  HashTable的contains方法只能遍历查找，其时间复杂度是O(n)，在最坏的情况下我们可能需要遍历整个哈希表中的所有Entry。HashTable中可能发生线程安全问题的方法都使用 synchronized 关键字添加互斥锁，如此以来，虽然保证了其线程安全性，但对方法实现互斥会让整个对象都受影响，这也间接的给出了java不推荐在高并发的场景下使用HashTable的解释。其get()方法首先对key进行哈希运算然后通过取模等操作计算出key所在的索引，然后进行遍历操作，其时间复杂度为 O(logn)。这种算法被称之为哈希查找，拥有极高的效率，比较推崇。向哈希表中存放数据时，首先根据key的hash计算索引，然后在索引的table上找到其Entry链表，遍历该链表中是否已存在该key，如果已存在则将value替换，否则就在table上index索引的Entry链表后追加该元素。这种算法原理符合人类的思维形式，比较利于理解，可计算机CPU并不擅长求余计算，进行哈希查找时有一定的计算资源浪费。至于clear()方法就是遍历清除table上的每一个节点，将哈希表的大小置0。等待垃圾回收时直接就将哈希表中的内容全部回收，释放内存。哈希表的keySet()等方法也都是线程安全的，其实现原理就是通过Collections.synchronizedSet()方法将原有的keySet结合哈希表本身作为互斥锁转化成线程安全的集合。keySet的迭代操作使用哈希表内部进行专有优化的迭代器进行迭代，在保证线程安全的前提下，尽量加快迭代速度。</p>
-<h3 id="hashmap-经典容器"><a href="#HashMap-经典容器" class="headerlink" title="HashMap 经典容器"></a>HashMap 经典容器</h3><p>  HashMap是我们在开发中最为钟爱的Map类，使用时简单方便，且性能极高。其内部实现由自己定制化的高效hash算法，jdk8更是对HashMap做出了很多的优化。在使用时HashMap允许null作为其键或值，增加了API的灵活性，但是HashMap并不是线程安全的，请注意不要在并发使用此类。HashMap的内部基本存储方式是大致可以看成是哈希表，当HashMap中的某个哈希桶内部的链表存储的元素达到一定数目时，随着链表的不断拓展，查找元素的算法的时间复杂度将上升到O(n)。为了能够保证HashMap的效率，当链表的程度大于阈值（默认为8）时，这个哈希桶就会被转化成效率更高红黑树。</p>
-<pre><code>HashMap的属性代码：
-</code></pre>
                     
                         
                     
                     
                         <p>
-                            <a href="/2017/08/25/jdk/map源码分析/#post-footer" class="postShorten-excerpt_link link">
+                            <a href="/2017/09/16/database/elasticsearch/[ElasticSearch ]1初步使用/#post-footer" class="postShorten-excerpt_link link">
                                 评论和共享
                             </a>
                         </p>
@@ -669,7 +409,6 @@ while(i.hasBext()){
 </div>
 
 </section>
-
 
 
                 <footer id="footer" class="main-content-wrap">

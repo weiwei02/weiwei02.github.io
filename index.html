@@ -197,6 +197,215 @@
             <div class="postShorten-header">
                 <h1 class="postShorten-title" itemprop="headline">
                     
+                        <a class="link-unstyled" href="/2017/09/16/database/elasticsearch/[ElasticSearch ]1初步使用/">
+                            -Elasticsearch-1初步使用
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time itemprop="datePublished" datetime="2017-09-16T03:25:00+08:00">
+	
+		    9月 16, 2017
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/java/">java</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-content" itemprop="articleBody">
+                    <h1 id="elastic-search初步使用"><a href="#elastic-search初步使用" class="headerlink" title="elastic search初步使用"></a>elastic search初步使用</h1><p>   ElasticSearch是一个基于Lucene的搜索引擎，是当前世界上最受欢迎的全文搜索引擎，其主要特点如下：</p>
+<ul>
+<li>横向可拓展性： 往集群中增加机器时只需要更改一点配置就可以将新机器加入集群</li>
+<li>分片机制： 同一个索引切分成不同的分片</li>
+<li>高可用： 提供复制集机制，一个分片可以设置多个复制集，某台机器如果宕机不至于使集群无法工作</li>
+<li>使用简单，基于 REST api就可以完成搜索引擎的全部工作，所需学习成本低。</li>
+</ul>
+<blockquote>
+<p>如无特殊声明，本文和后续文档将 Elastic Search 简称为ES</p>
+</blockquote>
+<h2 id="全文搜索"><a href="#全文搜索" class="headerlink" title="全文搜索"></a>全文搜索</h2><p>   全文搜索是指搜索程序扫描整个文档，通过一定的分词方法，对每一个词建立索引，并指明该词在文档中出现的位置和次数，最后搜索引擎再通过索引关键字搜索出文档并返回给用户的过程。</p>
+<h4 id="lucene"><a href="#Lucene" class="headerlink" title="Lucene"></a>Lucene</h4><p>   Lucene是Apache下的一个开源全文搜索引擎工具，提供了完整的查询引擎和索引引擎和部分文本分析引擎。不过Lucene仅仅是一个工具包，其目的是为了让研发人员能够通过这些工具包快速的为自己的应用搭建一个搜索引擎或者基于这些工具包开发出一个完整的搜索引擎。</p>
+<h4 id="倒排序索引"><a href="#倒排序索引" class="headerlink" title="倒排序索引"></a>倒排序索引</h4><p>   Lucene中的索引采用的是倒排序索引的模式。所谓的倒排序索引(Inverted Index)是通过属性的值来确定整条纪录的位置，而不是由纪录来确定属性的值。倒排索引把普通索引中的文档编号和值的关系倒过来，变成：“关键词”对“拥有该关键词的所有文章号”。带有倒排索引的文件我们称为倒排索引文件，简称倒排文件(inverted file)。倒排索引主要就由索引关键字和倒排文件所组成。</p>
+<p>   建立搜索引擎的关键步骤就在于建立倒排索引，倒排索引一般以以下数据结构出现：</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>文章号[出现频率]</th>
+<th>出现位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>简单</td>
+<td>1[3]</td>
+<td>2,9,89</td>
+</tr>
+<tr>
+<td>美女</td>
+<td>5[1]</td>
+<td>1</td>
+</tr>
+<tr>
+<td>tip</td>
+<td>9[2]</td>
+<td>2,7,22</td>
+</tr>
+</tbody>
+</table>
+<p>表1 倒排索引数据结构示例</p>
+<p>倒排索引在存储上使用LSM树，维护其索引方法是当需要新增文档进入系统时，首先解析文档，之后更新内存中维护的临时索引，文档中出现的每个单词，在其倒排表列表末尾追加倒排表列表项；一旦临时索引将指定内存消耗光，即进行一次索引合并，这里需要倒排文件里的倒排列表存放顺序已经按照索引单词字典顺序由低到高排序，这样直接顺序扫描合并即可。</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>   lucene在实现倒排索引时将索引划分为词典文件(Term Dictionary)、频率文件(Frequencies)、位置文件(Positions)保存。其中词典文件不仅包含关键词，还有该关键词指向频率文件和位置文件的指针。</p>
+<p>   为了节省存储空间，提升索引效率。Lucene还对索引进行了压缩。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>   ES使用JAVA语言开发，所以在安装ES之前需要在系统中安装有JDK。</p>
+<p>   表2是本文中的示例所使用的软件环境信息。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>ubuntu server</td>
+<td>16.04.2 LTS</td>
+</tr>
+<tr>
+<td>内核</td>
+<td>Kernel</td>
+<td>4.4.0-62-generic</td>
+</tr>
+<tr>
+<td>容器</td>
+<td>docker</td>
+<td>1.28</td>
+</tr>
+<tr>
+<td>java</td>
+<td>openjdk</td>
+<td>1.8.0_141</td>
+</tr>
+<tr>
+<td>搜索引擎</td>
+<td>elasticsearch</td>
+<td>5.5.2</td>
+</tr>
+</tbody>
+</table>
+<p>表2 本机软件环境信息</p>
+<h4 id="docker镜像安装"><a href="#docker镜像安装" class="headerlink" title="docker镜像安装"></a>docker镜像安装</h4><p>   为了方便部署，我直接采用docker镜像的方式搭建ES。镜像启用命令为：</p>
+<pre><code>$ docker run -d -v &quot;$PWD/esdata&quot;:/usr/share/elasticsearch/data --name elasticsearch -H elasticsearch elasticsearch  -Etransport.host=0.0.0.0 -Ediscovery.zen.minimum_master_nodes=1 elasticsearch
+</code></pre><h4 id="系统内核参数"><a href="#系统内核参数" class="headerlink" title="系统内核参数"></a>系统内核参数</h4><p>   由于elastic search需要用到nio和mmap(虚拟内存映射)技术，在启动该镜像之前首先需要检查一下系统内核对虚拟内存映射数目的限制(vm.max_map_count参数)是否大于262144，如果不满足这个条件，elastic search镜像将不会启动。</p>
+<p>   我们可以通过以下两种方式去设置系统内核的vm.max_map_count参数：</p>
+<pre><code>sysctl -w vm.max_map_count=262144
+</code></pre><p>   如果想永久修改此参数，可以通过修改 <code>/etc/sysctl.conf</code> 文件的方式使其永久性的成为系统内核参数。</p>
+<h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><p>   在linux系统下，我们可以使用 <code>curl</code> 程序来完成REST接口的调用与测试，《Elasticsearch权威指南》对 <code>curl</code> 调用REST接口的方式描述如图1所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/1.png-github" alt="image"><br>   图一 curl命令示意图</p>
+<p>   使用以下命令可以检测elastic search是否启动成功。</p>
+<pre><code>curl -i -XGET &apos;localhost:9200/&apos;
+</code></pre><p>   <code>-i</code> 参数是说明要打印http请求头信息，<code>GET</code>是请求方法，<code>localhost:9200/</code>就是我们服务器的地址和端口，elastic search默认与外部交互的端口就是9200.如果服务启动成功，你会收到类似虾苗的响应信息。</p>
+<pre><code>HTTP/1.1 200 OK
+content-type: application/json; charset=UTF-8
+content-length: 331
+
+{
+  &quot;name&quot; : &quot;Franz Kafka&quot;,
+  &quot;cluster_name&quot; : &quot;elasticsearch&quot;,
+  &quot;cluster_uuid&quot; : &quot;JP677C9kRNqjEWYnFae_gQ&quot;,
+  &quot;version&quot; : {
+    &quot;number&quot; : &quot;5.5.2&quot;,
+    &quot;build_hash&quot; : &quot;b2f0c09&quot;,
+    &quot;build_date&quot; : &quot;2017-08-14T12:33:14.154Z&quot;,
+    &quot;build_snapshot&quot; : false,
+    &quot;lucene_version&quot; : &quot;6.6.0&quot;
+  },
+  &quot;tagline&quot; : &quot;You Know, for Search&quot;
+}
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>   为了方便操作，本文与后续内容都将使用chrome浏览器的 Restlet Client插件来模拟REST请求，在这里推荐一下，感谢该插件的作者将本插件开源。</p>
+<h4 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h4><p>   Elastic Search就像是一个nosql数据库一样，存储我们要进行查询的信息，在ES中，数据库名就是索引名。一个 Elastic Search 集群可以包含多个索引，相应的每个索引可以包含多个类型 。这些不同的类型存储着多个文档 ，每个文档又有多个属性。</p>
+<p>   我们可以使用PUT方法创建blogs库，详细请求信息如图2所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/2.png-github" alt="image"><br>   图二 创建blogs数据库</p>
+<p>   如果收到以下回应内容，则说明blogs数据库创建成功。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/3.png-github" alt="image"><br>   图3 创建blogs数据库成功的回应信息</p>
+<p>   使用GET地址 <a href="http://ubuntu:9200/_cat/indices?v可以查看库的状态，返回结果如下：" target="_blank" rel="external">http://ubuntu:9200/_cat/indices?v可以查看库的状态，返回结果如下：</a></p>
+<pre><code>health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   blogs Y9hkRePSQmiAzjNQ_K_FSw   5   1          0            0       810b           810b
+</code></pre><p>   其中yellow代表健康度，状态是活动，索引为blogs，主分片数量5，复制集1，已存储的文档数为0.</p>
+<h3 id="新建文档"><a href="#新建文档" class="headerlink" title="新建文档"></a>新建文档</h3><p>   ES是一个面向文档的数据库，每一个文档都代表一条完整的实体记录，本文实例中一个文档就代表一篇文章。存储一个文档到ES的行为就叫做索引，在索引一个文档之前，首先应该明确应该将文档存储在哪里。</p>
+<p>   本文对于数据存储使用以下设计：</p>
+<ul>
+<li>每一篇文章被定义为一个文档，包含作者，发布时间，文章分类，正文等信息。</li>
+<li>每个文档都属于articles类型</li>
+<li>articles类型保存在blogs索引里</li>
+<li><p>blogs索引在我们的ES集群中。</p>
+<p>按照这个设计思路，我们向ES中索引一篇文章，其请求信息图4所示。</p>
+</li>
+</ul>
+<p><img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/4.png-github" alt="image"><br>   图4 向blogs索引articles类型插入一篇新文档</p>
+<p>   如果新建文档成功，则会收到HTTP状态码为201的回应，回应信息如图5所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/5.png-github" alt="image"><br>   图5 向blogs索引articles类型插入一篇新文档回应信息</p>
+<p>   接着我们再索引几篇新文档，如图6，图7.<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/6.png-github" alt="image"><br>   图6 向blogs索引articles类型插入更多新文档<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/7.png-github" alt="image"><br>   图7 向blogs索引articles类型插入更多新文档。</p>
+<p>   如果你无法手动对文档进行编号，可以使用POST方法向ES中索引一个新文档，其操作方法和链接规则如图8所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/9.png-github" alt="image"><br>   图8 向blogs索引articles类型POST插入一篇新文档</p>
+<p>   从其相应结果中可以看出ES通过自己的规则为文档增加了_id字段，相应结果如图9所示.<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/10.png-github" alt="image"><br>   图9 向blogs索引articles类型POST插入一篇新文档响应信息</p>
+<h4 id="检索文档"><a href="#检索文档" class="headerlink" title="检索文档"></a>检索文档</h4><p>   在ES中检索已存在的文档只需使用GET方法访问刚刚新增文档时的连接就可以了。</p>
+<pre><code>GET http://ubuntu:9200/blogs/articles/2
+</code></pre><p>   返回结果如图10所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/8.png-github" alt="image"><br>   图10 从blogs索引articles类型检索文档</p>
+<p>   _index属性代表文档所属索引， _type是文档所属类型， _id是文档编号, _version是文档的版本（每对文档做一次修改， _version就会加1）， _found代表是否查询到指定文档， _source就是文档中所存储的内容。</p>
+<h4 id="更新与删除文档"><a href="#更新与删除文档" class="headerlink" title="更新与删除文档"></a>更新与删除文档</h4><p>   使用REST API对ES中的数据进行修改或删除也是极其方便的。如果我们要删除某个文档，只需使用DELETE方法访问这个文档的链接就可以了。</p>
+<pre><code>DELETE http://ubuntu:9200/blogs/articles/2
+</code></pre><p>   我们先介绍一种全量更新文档的方法，使用PUT方法访问我们的文档地址，参数信息加上文档的新内容就可以全量更新文档了。文档更新后，ES会犯规给我们新的文档版本和操作结果。</p>
+<p>   示例，对文档2进行全量更新，其请求与回应信息如图11，图12所示。</p>
+<p>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/11.png-github" alt="image"><br>   图11 PUT文档全量更新<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/12.png-github" alt="image"><br>   图12 PUT文档全量更新响应</p>
+<p>   ES的文档不能被修改，只能被替换。但ES为我们提供了 update API。通过update API操作从整体来看，我们可以对文档的某个位置进行部分更新。不过在底层实现上 update API 还是需要进行完整的检索-修改-重建索引 的处理过程。 区别在于这个过程发生在分片内部，这样就避免了多次请求的网络开销。因为减少了检索和重建索引步骤之间的时间，更新此文档时与其他进程的更新操作冲突的可能性也会减少。<br>   update 请求最简单的一种形式将待更新的字段作为doc的参数， 它只是与现有的文档进行合并。对象被合并到一起，覆盖现有的字段或者新增字段。</p>
+<p>   示例，修改文档2的author和tags属性，其请求、新文档内容如图13、图14所示。<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/13.png-github" alt="image"><br>   图13 POST update文档部分更新<br>   <img src="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/14.png-github" alt="image"><br>   图14 POST update文档部分更新后的结果</p>
+<p>   如果更新文档是一个并发操作，当前工作在更新文档的检索步骤会获取当前版本号，在重建索引之前会检查文档此时的版本号是否与检索时的版本号一致，如果版本号不一致，当前线程就会发生操作失败，放弃文档的修改。如果业务上允许重复更新的话，可以通过retry_on_conflict属性，来设置失败重试。该属性用法如下面代码所示。对于不能重试的业务场景，update API提供了version属性进行乐观并发控制。</p>
+<pre><code>PUT http://ubuntu:9200/blogs/articles/2/_update?retry_on_conflict=5
+</code></pre><h4 id="搜索文档"><a href="#搜索文档" class="headerlink" title="搜索文档"></a>搜索文档</h4><p>   搜索是ES的核心，不过鉴于篇幅原因，关于搜索功能的使用将放到下篇文章中。</p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p> 本文是我在学习使用ES时的笔记，在本文的写过过程中参考了大量其它资料，有些材料来源于网络，我由衷的表示感谢，但由于原作者不明，恕不能一一记述。</p>
+<ol>
+<li>Elasticsearch 权威指南.——<a href="https://www.elastic.co/" target="_blank" rel="external">https://www.elastic.co/</a></li>
+<li><p>Elasticsearch技术解析与实战/朱林编著.——北京：机械工业出版社，2016.12(数据分析与决策技术丛书)</p>
+<p>非原创声明</p>
+<blockquote>
+<p>本文并非我的原创文章，而是我学习jvm时的笔记。文中的材料与数据大部分来自于其它资料，详细请查看本文的引用章节。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
+
+                    
+                        
+                    
+                    
+                        <p>
+                            <a href="/2017/09/16/database/elasticsearch/[ElasticSearch ]1初步使用/#post-footer" class="postShorten-excerpt_link link">
+                                评论和共享
+                            </a>
+                        </p>
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title" itemprop="headline">
+                    
                         <a class="link-unstyled" href="/2017/09/14/sentiment/life/程序员-有效的表达自己/">
                             编程与人生的韵味-有效的表达自己
                         </a>
@@ -2137,175 +2346,18 @@ private static void increase() {
         
     </article>
     
-    
-    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-        <div class="postShorten-wrap">
-            
-            <div class="postShorten-header">
-                <h1 class="postShorten-title" itemprop="headline">
-                    
-                        <a class="link-unstyled" href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/">
-                            MapReduce并行计算框架介绍
-                        </a>
-                    
-                </h1>
-                <div class="postShorten-meta">
-    <time itemprop="datePublished" datetime="2017-02-04T00:19:24+08:00">
-	
-		    2月 04, 2017
-    	
-    </time>
-    
-        <span>发布在 </span>
-        
-    <a class="category-link" href="/categories/bigdata/">bigdata</a>, <a class="category-link" href="/categories/bigdata/hadoop/">hadoop</a>
-
-
-    
-</div>
-
-            </div>
-            
-                <div class="postShorten-content" itemprop="articleBody">
-                    <h1 id="关于mapreduce"><a href="#关于MapReduce" class="headerlink" title="关于MapReduce"></a>关于MapReduce</h1><p>   MapReduce是一种可用于数据处理的编程模型。MapReduce程序本质上是并行运行的，<br>   因此可以将大规模的数据分析任务分发给任何一个拥有足够多机器的数据中心，充分利用Hadoop<br>   提供的并行计算的优势。</p>
-<h2 id="使用hadoop来分析数据"><a href="#使用Hadoop来分析数据" class="headerlink" title="使用Hadoop来分析数据"></a>使用Hadoop来分析数据</h2><p>   MapReduce任务过程分为两个处理阶段：map阶段和reduce阶段。每个阶段都以键/值对作为<br>   输入和输出，其类型由程序员来选择。程序员还需要写两个函数，map函数和reduce函数.<br>   示例取自《Hadoop权威指南-第三版》</p>
-<h4 id="1-创建查找最高气温的mapper类"><a href="#1-创建查找最高气温的Mapper类" class="headerlink" title="1. 创建查找最高气温的Mapper类"></a>1. 创建查找最高气温的Mapper类</h4><pre><code>package com.hadoopbook.ch02;
-
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
-import java.io.IOException;
-
-/**
- * [@author](https://my.oschina.net/arthor) WangWeiwei
- * [@version](https://my.oschina.net/u/931210) 1.0
- * [@sine](https://my.oschina.net/mysine) 17-2-4
- * 查找最高气温的mapper类
- */
-public class MaxTemperatureMapper extends  Mapper&lt;LongWritable,Text,Text,IntWritable&gt; {
-    private static final int MISSING = 9999;
-
-    @Override
-    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        String line = value.toString();
-        String year = line.substring(15,19);
-        int airTemperature;
-        if (line.charAt(87) == &apos;+&apos;){
-            // parseInt doesn&apos;t like leading plus signs
-            airTemperature = Integer.parseInt(line.substring(88, 92));
-        }else {
-            airTemperature = Integer.parseInt(line.substring(87, 92));
-        }
-        String quality = line.substring(92, 93);
-        if (airTemperature != MISSING &amp;&amp; quality.matches(&quot;[01459]&quot;)) {
-            context.write(new Text(year), new IntWritable(airTemperature));
-        }
-    }
-
-    public MaxTemperatureMapper() {
-        super();
-    }
-}
-</code></pre><p>   这个mapper类是一个泛型类型，它有四个形参类型，分别指定map函数的输入键/输入值/输出键和输出值的类型。<br>   Hadoop本身提供了一套可优化网络序列化传输的基本类型，而不是直接使用java内嵌的类型。这些类型都在<br>   org.apache.hadoop.io包里。<br>   map() 方法的输入是一个键和一个值，方法还提供了context实例用于输出内容的写入。</p>
-<h4 id="2-查找最高气温的reducer类"><a href="#2-查找最高气温的reducer类" class="headerlink" title="2. 查找最高气温的reducer类"></a>2. 查找最高气温的reducer类</h4><p>   类似于上的方法，使用Reducer来定义reduce函数.</p>
-<pre><code>package com.hadoopbook.ch02;
-
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
-import java.io.IOException;
-
-/**
- * [@author](https://my.oschina.net/arthor) WangWeiwei
- * @version 1.0
- * @sine 17-2-4
- * 查找最高气温的Reducer类
- */
-public class MaxTemperatureReducer extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
-    public MaxTemperatureReducer() {
-        super();
-    }
-
-    @Override
-    protected void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException {
-        int maxValue = Integer.MIN_VALUE;
-        for (IntWritable value : values){
-            maxValue = Math.max(maxValue, value.get());
-        }
-        context.write(key,new IntWritable(maxValue));
-    }
-}
-</code></pre><p>   同样，reduce函数也有四个形式参数类型用于指定输入和输出类型。reduce函数的输入类型必须匹配map函数<br>   的输出类型：即TEXT类型和IntWritable类型。</p>
-<h4 id="3-mapreduce作业"><a href="#3-MapReduce作业" class="headerlink" title="3. MapReduce作业"></a>3. MapReduce作业</h4><p>   指定一个作业对象，在这个应用中用来在气象数据集中找出最高气温</p>
-<pre><code>package com.hadoopbook.ch02;
-
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-/**
- * @author WangWeiwei
- * @version 1.0
- * @sine 17-2-4
- * MaxTemperature Application to find the maximum temperature in the weather dataset
- */
-public class MaxTemperature {
-    public static void main(String[] args) throws Exception{
-        if (args.length != 2){
-            System.err.println(&quot;Usage: MaxTemperature &lt;input path&gt; &lt;output path&gt;&quot;);
-            System.exit(-1);
-        }
-
-        Job job = new Job();
-        job.setJarByClass(MaxTemperature.class);
-        job.setJobName(&quot;Max Temperature&quot;);
-
-        FileInputFormat.addInputPath(job,new Path(args[0]));
-        FileOutputFormat.setOutputPath(job,new Path(args[1]));
-
-        job.setMapperClass(MaxTemperatureMapper.class);
-        job.setReducerClass(MaxTemperatureReducer.class);
-
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-}
-</code></pre><p>   Job对象指定作业的执行规范。我们可以使用它来控制整个作业的运行。我们在Hadoop集群上运行这个作业时，<br>   要把它打包成一个JAR文件（Hadoop在集群上发布这个文件）。不必明确指定JAR文件的名称，在Job对象的<br>   setJarByClass方法中传递一个类即可，Hadoop利用这个类来查找包含它的JAR文件，进而找到相关的JAR文件。</p>
-<p>   构造Job对象之后，需要指定输入和输出数据路径。调用FileInputFormat类的静态方法addInputPath()<br>   来定义输入数据的路径，这个路径可以是单个文件/一个目录（此时目录下的所有文件当作输入）或符合特定文件模式的一系列文件。<br>   由函数名可知，可以多次调用addInputPath()方法。</p>
-<p>   调用FIleOutFormat类中的静态方法setOutputPath()来指定输出路径，只能有一个输出路径。这个方法指定的是<br>   reduce函数输出文件的写入目录。在运行作业前该目录是不应该存在的，否则Hadoop会报错，并拒绝运行作业。<br>   这种预防措施的目的是防止数据丢失（长时间运行的作业如果结果被意外覆盖，肯定是非常恼人的）</p>
-<p>   接着通过setMapperClass()和setReducerClass()指定map类型和reduce类型。</p>
-<p>   setOutputKeyClass() 和 setOutputValueClass() 控制map和reduce函数的输出类型。</p>
-<p>   在设置定义map和reduce函数的类后，可以开始运行作业。job中的waitForCompletion()方法返回一个布尔值。</p>
-
-                    
-                        
-                    
-                    
-                        <p>
-                            <a href="/2017/02/04/bigdata/hadoop/并行计算框架介绍/#post-footer" class="postShorten-excerpt_link link">
-                                评论和共享
-                            </a>
-                        </p>
-                    
-                </div>
-            
-        </div>
-        
-    </article>
-    
     <div class="pagination-bar">
     <ul class="pagination">
         
         
-        <li class="pagination-number">第 1 页 共 1 页</li>
+        <li class="pagination-next">
+            <a class="btn btn--default btn--small" href="/page/2/">
+                    <span>下一页</span>
+                <i class="fa fa-angle-right text-base icon-ml"></i>
+            </a>
+        </li>
+        
+        <li class="pagination-number">第 1 页 共 2 页</li>
     </ul>
 </div>
 
@@ -2621,7 +2673,7 @@ fork me on github logo
                 data-message-zero="没有找到文章"
                 data-message-one="找到 1 篇文章"
                 data-message-other="找到 {n} 篇文章">
-                找到 10 篇文章
+                找到 11 篇文章
             </p>
         </div>
     </div>
