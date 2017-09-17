@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/12.png-github">
 <meta property="og:image" content="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/13.png-github">
 <meta property="og:image" content="http://owbdiwmx1.bkt.clouddn.com/images/java/elasticsearch/base/14.png-github">
-<meta property="og:updated_time" content="2017-09-15T19:23:16.112Z">
+<meta property="og:updated_time" content="2017-09-17T17:57:51.397Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="-Elasticsearch-1初步使用">
 <meta name="twitter:description" content="elastic search初步使用   ElasticSearch是一个基于Lucene的搜索引擎，是当前世界上最受欢迎的全文搜索引擎，其主要特点如下：  横向可拓展性： 往集群中增加机器时只需要更改一点配置就可以将新机器加入集群 分片机制： 同一个索引切分成不同的分片 高可用： 提供复制集机制，一个分片可以设置多个复制集，某台机器如果宕机不至于使集群无法工作 使用简单，基于 REST api就">
@@ -242,7 +242,7 @@ text-align: center;
 
 <aside id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#elastic-search初步使用"><span class="post-toc-text">elastic search初步使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#全文搜索"><span class="post-toc-text">全文搜索</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#lucene"><span class="post-toc-text">Lucene</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#倒排序索引"><span class="post-toc-text">倒排序索引</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#实现"><span class="post-toc-text">实现</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#安装"><span class="post-toc-text">安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#docker镜像安装"><span class="post-toc-text">docker镜像安装</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#系统内核参数"><span class="post-toc-text">系统内核参数</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#测试"><span class="post-toc-text">测试</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用"><span class="post-toc-text">使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#创建索引"><span class="post-toc-text">创建索引</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#新建文档"><span class="post-toc-text">新建文档</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#检索文档"><span class="post-toc-text">检索文档</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#更新与删除文档"><span class="post-toc-text">更新与删除文档</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#搜索文档"><span class="post-toc-text">搜索文档</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关于"><span class="post-toc-text">关于</span></a></li></ol></li></ol>
+    <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#elastic-search初步使用"><span class="post-toc-text">elastic search初步使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#全文搜索"><span class="post-toc-text">全文搜索</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#lucene"><span class="post-toc-text">Lucene</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#倒排序索引"><span class="post-toc-text">倒排序索引</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#实现"><span class="post-toc-text">实现</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#安装"><span class="post-toc-text">安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#docker镜像安装"><span class="post-toc-text">docker镜像安装</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#系统内核参数"><span class="post-toc-text">系统内核参数</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#测试"><span class="post-toc-text">测试</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#使用"><span class="post-toc-text">使用</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#创建索引"><span class="post-toc-text">创建索引</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#新建文档"><span class="post-toc-text">新建文档</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#检索文档"><span class="post-toc-text">检索文档</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#更新与删除文档"><span class="post-toc-text">更新与删除文档</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#搜索文档"><span class="post-toc-text">搜索文档</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#引用"><span class="post-toc-text">引用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#关于"><span class="post-toc-text">关于</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#链接"><span class="post-toc-text">链接</span></a></li></ol></li></ol>
 </aside>
 
 <article class="" itemscope itemType="http://schema.org/BlogPosting">
@@ -437,6 +437,10 @@ yellow open   blogs Y9hkRePSQmiAzjNQ_K_FSw   5   1          0            0      
 </li>
 </ol>
 <h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><ul>
+<li>上篇文章（无）</li>
+<li>下篇文章<a href="http://www.jianshu.com/p/8fbb867c3d19" target="_blank" rel="external">ElasticSearch2轻量级搜索</a></li>
+</ul>
 
             
         </div>
@@ -456,7 +460,7 @@ yellow open   blogs Y9hkRePSQmiAzjNQ_K_FSw   5   1          0            0      
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--disabled">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/09/18/database/elasticsearch/[ElasticSearch]2轻量级搜索/"  data-tooltip="-Elasticsearch-2轻量级搜索">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -572,7 +576,7 @@ fork me on github logo
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    <a class="post-action-btn btn btn--disabled">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2017/09/18/database/elasticsearch/[ElasticSearch]2轻量级搜索/"  data-tooltip="-Elasticsearch-2轻量级搜索">
                 
                     <i class="fa fa-angle-left"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -907,7 +911,7 @@ fork me on github logo
                 data-message-zero="没有找到文章"
                 data-message-one="找到 1 篇文章"
                 data-message-other="找到 {n} 篇文章">
-                找到 11 篇文章
+                找到 12 篇文章
             </p>
         </div>
     </div>

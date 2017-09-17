@@ -198,6 +198,203 @@
             <div class="postShorten-header">
                 <h1 class="postShorten-title" itemprop="headline">
                     
+                        <a class="link-unstyled" href="/2017/09/18/database/elasticsearch/[ElasticSearch]2轻量级搜索/">
+                            -Elasticsearch-2轻量级搜索
+                        </a>
+                    
+                </h1>
+                <div class="postShorten-meta">
+    <time itemprop="datePublished" datetime="2017-09-18T02:00:00+08:00">
+	
+		    9月 18, 2017
+    	
+    </time>
+    
+        <span>发布在 </span>
+        
+    <a class="category-link" href="/categories/java/">java</a>
+
+
+    
+</div>
+
+            </div>
+            
+                <div class="postShorten-content" itemprop="articleBody">
+                    <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>   ES是一个搜索引擎，我们之所以要使用它就是为了借助它快速构建全文索引，帮助我们快速检索数据。</p>
+<p>   本文接着上篇文章<a href="http://www.jianshu.com/p/b338b37dd5e2" target="_blank" rel="external">ElasticSearch1初步使用</a>继续来通过blogs索引实例说明如何简单的借助ES实现轻量级搜索功能。</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>   本文主要以应用ES为基本问题，主要探索ES通过GET方法进行搜索的使用方法。在实验的示例中本文也会简要的描述ES相关的理论知识。</p>
+<p>   如何使用索引进行搜索，对搜索结果进行分页，并使用简单的条件来过滤搜过结果是本文需要探讨的问题。</p>
+<h1 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h1><p>   本文采用对照RDBMS中SELECT功能的方法来描述ES中的轻量级搜索的概念，从总体上来讲，在ES中搜索数据其实和在RDBMS中SELECT数据是一样的，都可以指定搜索（查询）条件，都可以设置返回字段，也都可以进行一定的聚合运算。只不过ES搜索引擎使用全文搜索得到的结果会根据内容与搜索关键字的匹配程度给与每个结果一个权重，这个权重就作为搜索结果排序的依据。而RDBMS完全是依照ORDER BY子句中指定的排序规则进行排序的。</p>
+<p>   说明：</p>
+<p>   ES REST API所提供的完全在URL中描述参数的接口就是轻量级搜索接口，换句话说轻量级搜索接口都是使用GET方法的。所以文中示例使用的地址和API语法总结如没有对HTTP请求方法做出特殊声明，均使用GET方法。</p>
+<p>   对本文中语法说明特殊字符的声明：</p>
+<ul>
+<li>{a} 代表a变量,如{host}代表主机名或ip地址，{index}代表索引名</li>
+<li>[] 代表可出现也可不出现，一般情况下带有[]标识的变量出现和不出现会有不同的含义。对于URL开头的[http[s]://]表达式，如果省略整个表达式则系统会默认使用http协议。</li>
+<li>… 对返回结果或请求内容进行部分省略。</li>
+</ul>
+<h3 id="全量数据搜索"><a href="#全量数据搜索" class="headerlink" title="全量数据搜索"></a>全量数据搜索</h3><h5 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h5><p>   请求信息：</p>
+<pre><code>[http[s]://]{host}:{port}/[{index}/[{type}/]]_search
+</code></pre><p>   响应信息：</p>
+<pre><code>{
+    &quot;took&quot;: 7,//执行搜索请求的耗时，单位毫秒
+    &quot;timed_out&quot;: false,//搜索是否超时
+    &quot;_shards&quot;:{//参与本次搜索的分片信息
+        &quot;total&quot;: 5,//参与本次搜索的分票总个数
+        &quot;successful&quot;: 5,//有多少个分片成功的完成了搜索任务
+        &quot;failed&quot;: 0 //有多少分片执行搜索任务失败
+    },
+    &quot;hits&quot;:{ //搜过结果信息
+        &quot;total&quot;: 1,//匹配到的文档总数
+        &quot;max_score&quot;: 1.0193838,//查询所匹配文档的 _score 的最大值。
+        &quot;hits&quot;:[...]//匹配到的文档详细信息结果集
+    }
+}
+</code></pre><p>   在没有指定分页条件的情况下，响应信息默认返回10条结果。</p>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><p>   搜索blogs索引下，articles类型下的全部文档。这是一个没有任何过滤条件的最简单的搜索。</p>
+<p>   请求信息：</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search
+</code></pre><p>   响应信息：</p>
+<pre><code>{
+  ...,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;blogs&quot;,
+        &quot;_type&quot; : &quot;articles&quot;,
+        &quot;_id&quot; : &quot;AV6GlxJvP5Roqj_P-AOw&quot;,
+        &quot;_score&quot; : 1.0,
+        &quot;_source&quot; : {
+          &quot;title&quot; : &quot;ES自动生成id索引&quot;,
+          &quot;author&quot; : &quot;为为&quot;,
+          &quot;since&quot; : &quot;2017-09-16 20:20:20&quot;,
+          &quot;categorie&quot; : &quot;搜索引擎&quot;,
+          &quot;tags&quot; : [
+            &quot;java&quot;,
+            &quot;研发&quot;
+          ],
+          &quot;body&quot; : &quot;如果你无法手动对文档进行编号，可以使用POST方法向ES中索引一个新文档，其操作方法和链接规则如图8所示。&quot;
+        }
+      },
+      ...//更多内容暂时省略
+    ]
+  }
+}
+</code></pre><h3 id="简单条件筛选"><a href="#简单条件筛选" class="headerlink" title="简单条件筛选"></a>简单条件筛选</h3><p>   简单的条件筛选就像是给SQL中的SELECT语句加上WHERE子句，从而限定只查找满足某些条件的结果。</p>
+<h5 id="语法"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h5><p>   在请求路径中使用q参数，并将查询条件赋值给q</p>
+<pre><code>[http[s]://]{host}:{port}/[{index}/[{type}/]]_search?q={param_name}:{param_value}
+</code></pre><h5 id="示例"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h5><p>   我们搜索一下文章的tags包含 标签1 的文章。</p>
+<p>   请求参数：</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search?q=tags:标签1
+</code></pre><p>   响应参数：</p>
+<pre><code>{
+  ...,
+  &quot;hits&quot; : {
+    ...
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;blogs&quot;,
+        &quot;_type&quot; : &quot;articles&quot;,
+        &quot;_id&quot; : &quot;1&quot;,
+        &quot;_score&quot; : 1.0193838,
+        &quot;_source&quot; : {
+          &quot;title&quot; : &quot;第一篇文章&quot;,
+          &quot;author&quot; : &quot;马华&quot;,
+          &quot;since&quot; : &quot;2017-09-10 20:20:20&quot;,
+          &quot;categorie&quot; : &quot;科学读物&quot;,
+          &quot;tags&quot; : [
+            &quot;标签1&quot;,
+            &quot;标签2&quot;
+          ],
+          &quot;body&quot; : &quot;测试文章内容&quot;
+        }
+      }
+    ]
+  }
+}
+</code></pre><h3 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h3><p>   我们在SQL中SELECT语句可以使用LIMIT关键字进行分页，来保证我们每次查询只拿符合需求的数据条数。刚刚也提到过ES也支持分页，默认每页有10条数据。</p>
+<h5 id="语法"><a href="#语法-2" class="headerlink" title="语法"></a>语法</h5><p>   在搜索URL中可以使用<code>size</code>参数指定页大小，<code>from</code>应跳过的结果集条数。</p>
+<p>   请求信息：</p>
+<pre><code>[http[s]://]{host}:{port}/[{index}/[{type}/]]_search[?[size={size}][[&amp;]from={from}]]
+</code></pre><h5 id="示例"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h5><p>   不使用任何过滤条件搜索blogs索引type类型下的所有文档，指定页大小为2，从第跳过1条结果。</p>
+<p>   请求信息：</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search?size=2&amp;from=1
+</code></pre><p>   响应信息请自行演示。</p>
+<h3 id="多索引和类型"><a href="#多索引和类型" class="headerlink" title="多索引和类型"></a>多索引和类型</h3><p>   如果你需要在一个或多个特殊的索引并且在一个或者多个特殊的类型中进行搜索。我们可以通过在URL中指定特殊的索引和类型达到这种效果，下面举例说明如何使用多索引或多类型。<br>   在所有的索引中搜索所有的类型</p>
+<pre><code>http://ubuntu:9200/_search
+</code></pre><p>   在 blogs 索引中搜索所有的类型</p>
+<pre><code>http://ubuntu:9200/blogs/_search
+</code></pre><p>   在 blogs 和 pictures 索引中搜索所有的文档</p>
+<pre><code>http://ubuntu:9200/blogs,pictures/_search
+</code></pre><p>   在任何以 b 或者 p 开头的索引中搜索所有的类型</p>
+<pre><code>http://ubuntu:9200/b*,g*/_search
+</code></pre><p>   在 blogs 索引中搜索 aiticles 类型</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search
+</code></pre><p>   在 blogs 和 pictures 索引中搜索 articles 和 a_images 类型的文档</p>
+<pre><code>http://ubuntu:9200/blogs,pictures/articles,a_images/_search
+</code></pre><p>   在所有的索引中搜索 articles 和 a_images 类型的文档</p>
+<pre><code>http://ubuntu:9200/_all/articles,a_images/_search
+</code></pre><p>   当在单一的索引下进行搜索的时候，Elasticsearch 转发请求到索引的每个分片中，可以是主分片也可以是副本分片，然后从每个分片中收集结果。多索引搜索恰好也是用相同的方式工作的，只是会涉及到更多的分片。</p>
+<h3 id="多个搜索条件"><a href="#多个搜索条件" class="headerlink" title="多个搜索条件"></a>多个搜索条件</h3><p>   刚刚介绍的条件搜索只能使用一个搜索条件，而我们一般的业务都需要更为复杂的搜索条件。</p>
+<h5 id="_all字段"><a href="#all字段" class="headerlink" title="_all字段"></a>_all字段</h5><p>   在 blogs/aiticles 中搜索“为为”的相关信息，注意该搜索中并未指定“为为”属于哪个字段。</p>
+<pre><code>http://ubuntu:9200/blogs/_search?q=为为
+</code></pre><h5 id="同时搜索多个字段"><a href="#同时搜索多个字段" class="headerlink" title="同时搜索多个字段"></a>同时搜索多个字段</h5><p>   在 blogs/aiticles中搜索author包含”为为”，<strong>或</strong> title包含”ES”的信息。</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search?q=+title:ES自动生成id索引 +author:为为
+</code></pre><blockquote>
+<ul>
+<li>前缀表示必须与查询条件匹配。类似地， -前缀表示一定不与查询条件匹配。没有 + 或者 -的所有其他条件都是可选的——匹配的越多，文档就越相关。在存在多个条件时，如果没有明确使用default_operator=AND指定多个条件的关系为AND，则多个条件的关系为OR。</li>
+</ul>
+</blockquote>
+<h5 id="同一个字段下多种可能性"><a href="#同一个字段下多种可能性" class="headerlink" title="同一个字段下多种可能性"></a>同一个字段下多种可能性</h5><p>   在 blogs/aiticles中搜索author包含”为为”，<strong>或</strong>tags为”java”或”编码”的信息。</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search?q=+tags:(java 研发)  +author:为为
+</code></pre><p>   在 blogs/aiticles中搜索author包含”为为”，<strong>且</strong>tags为”java”或”编码”的信息。</p>
+<pre><code>http://ubuntu:9200/blogs/articles/_search?q=+tags:(java 研发)  +author:为为&amp;default_operator=AND
+</code></pre><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>   经过本文示例我们可以看出ES不仅可以作为一个NoSQL数据库，存储格式化的JSON数据，其更强大的功能在于搜索。ES不仅会存储文档，文档中的每个字段都将被索引并且可以被查询 。不仅如此，在简单查询时，Elasticsearch 可以使用 所有（all）索引字段，快度返回结果，我们甚至不必指定具体要搜索哪个字段就。</p>
+<p>   总之ES的搜索可以完成以下任务：</p>
+<ul>
+<li>在结构化的数据(JSON)中使用结构化查询。</li>
+<li><p>全文检索。</p>
+<p>轻量级搜索虽然简单方便，但其也有缺点：</p>
+</li>
+<li>当查询字符串中很小的语法错误，像 - ， : ， / 或者 “ 不匹配等，将会返回错误而不是搜索结果。</li>
+<li><p>允许任何用户在索引的任意字段上执行可能较慢且重量级的查询，这可能会暴露隐私信息，甚至将集群拖垮。</p>
+<p>基于以上两点原因，不推荐向用户直接开放轻量级搜索功能，一般情况下只在开发调试中使用。</p>
+</li>
+</ul>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>  本文是我在学习使用ES时的笔记，在本文的写过过程中参考了大量其它资料，有些材料来源于网络，我由衷的表示感谢，但由于原作者不明，恕不能一一记述。</p>
+<ol>
+<li>Elasticsearch 权威指南.——<a href="https://www.elastic.co/" target="_blank" rel="external">https://www.elastic.co/</a></li>
+<li>Elasticsearch技术解析与实战/朱林编著.——北京：机械工业出版社，2016.12(数据分析与决策技术丛书)</li>
+</ol>
+<h1 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h1><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
+<h1 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h1><ul>
+<li>上篇文章<a href="http://www.jianshu.com/p/b338b37dd5e2" target="_blank" rel="external">ElasticSearch-1初步使用</a></li>
+<li>下篇文章(待更新)</li>
+</ul>
+
+                    
+                        
+                    
+                    
+                        <p>
+                            <a href="/2017/09/18/database/elasticsearch/[ElasticSearch]2轻量级搜索/#post-footer" class="postShorten-excerpt_link link">
+                                评论和共享
+                            </a>
+                        </p>
+                    
+                </div>
+            
+        </div>
+        
+    </article>
+    
+    
+    <article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+        <div class="postShorten-wrap">
+            
+            <div class="postShorten-header">
+                <h1 class="postShorten-title" itemprop="headline">
+                    
                         <a class="link-unstyled" href="/2017/09/16/database/elasticsearch/[ElasticSearch ]1初步使用/">
                             -Elasticsearch-1初步使用
                         </a>
@@ -383,6 +580,10 @@ yellow open   blogs Y9hkRePSQmiAzjNQ_K_FSw   5   1          0            0      
 </li>
 </ol>
 <h2 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h2><p>  本项目和文档中所用的内容仅供学习和研究之用，转载或引用时请指明出处。如果你对文档有疑问或问题，请在项目中给我留言或发email到<br>  weiwei02@vip.qq.com   我的<a href="https://github.com/weiwei02/" target="_blank" rel="external">github</a>:<br>  <a href="https://github.com/weiwei02/" target="_blank" rel="external">https://github.com/weiwei02/</a>   我相信技术能够改变世界 。</p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><ul>
+<li>上篇文章（无）</li>
+<li>下篇文章<a href="http://www.jianshu.com/p/8fbb867c3d19" target="_blank" rel="external">ElasticSearch2轻量级搜索</a></li>
+</ul>
 
                     
                         
@@ -833,7 +1034,7 @@ fork me on github logo
                 data-message-zero="没有找到文章"
                 data-message-one="找到 1 篇文章"
                 data-message-other="找到 {n} 篇文章">
-                找到 11 篇文章
+                找到 12 篇文章
             </p>
         </div>
     </div>
